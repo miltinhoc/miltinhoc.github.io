@@ -38,7 +38,8 @@ header:
 
 twitter:
   username: miltinh0c
-
+  image:
+  
 include:
   - _pages
 
