@@ -35,8 +35,10 @@ So what if we place a payload in the app directory, change the shortcut an run i
 2. Place our payload on the latest app package directory.
 3. Change the Shortcut to lunch our payload instead of the discord binary.
 
-<p>Part 1 - Find the latest version of the app package</p>
+</br>
+<h2>Finding the latest version of the app package</h2>
 
 The version of the app is inside a file located on: ``%localappdata%\Discord\packages\RELEASES`` 
 
-If we check the contents of this file, we have something like this: ``230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477``
+If we check the contents of this file, we have something like this: 
+```230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477```
