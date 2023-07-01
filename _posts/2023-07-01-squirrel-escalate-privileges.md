@@ -2,10 +2,10 @@
 title: "Using Squirrel Framework to escalate privileges"
 categories:
 tags:
-  - squirrel-framwork
+  - squirrel-framework
 ---
 
-The [Squirrel framework](https://github.com/Squirrel/Squirrel.Windows) can be used to trick the user and escalate privileges.
+The [Squirrel framework](https://github.com/Squirrel/Squirrel.Windows) can be used to trick the user and escalate privileges. Keep in mind that this is no vulnerability in Squirrel, we are just taking advantage of how it works.
 
 In this example we will check Discord, which uses Squirrel for updating.
 
@@ -43,7 +43,7 @@ The version of the app is inside a file located on: ``%localappdata%\Discord\pac
 If we check the contents of this file, we have something like this: 
 ``230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477``
 
-What we need here is this value here: ``1.0.9013``, for that we can use regex to extract it:
+What we need is this value here: ``1.0.9013``, to do this we can use regex and extract it:
 ```csharp
 private string GetVersion(string fullPath)
 {
