@@ -33,13 +33,6 @@ paginate: 5 # amount of posts to show
 paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
-header:
-  image:
-
-twitter:
-  username: miltinh0c
-  image:
-  
 include:
   - _pages
 
@@ -67,7 +60,7 @@ plugins:
 author:
   name   : "miltinhoc"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "Penetration Tester | Teaching assistant 🐰"
+  bio    : "Penetration Tester && Teaching assistant 🐰"
   links:
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"

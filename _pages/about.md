@@ -3,4 +3,4 @@ permalink: /about/
 title: "About"
 ---
 
-Penetration Tester / Teaching assistant 🐰
+Penetration Tester && Teaching assistant 🐰
