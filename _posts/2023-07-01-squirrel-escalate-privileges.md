@@ -4,6 +4,8 @@ categories:
 tags:
   - squirrel-framework
 og_image: "https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1LVNvGPGQCnGZ6XXnRnz%2Fuploads%2FXU38zNUjuKfIqwvKrPY9%2F00143-2626686512.png?alt=media&token=2d9f8d64-4a11-4b43-870a-12646885a4b8"
+header:
+  image: "https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1LVNvGPGQCnGZ6XXnRnz%2Fuploads%2FXU38zNUjuKfIqwvKrPY9%2F00143-2626686512.png?alt=media&token=2d9f8d64-4a11-4b43-870a-12646885a4b8"
 ---
 
 The [Squirrel framework](https://github.com/Squirrel/Squirrel.Windows) can be used to trick the user and escalate privileges. Keep in mind that this is no vulnerability in Squirrel, we are just taking advantage of how it works.
