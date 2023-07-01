@@ -20,7 +20,7 @@ By checking out the Desktop shortcut that is created during installation, we can
 So what if we place a payload in the app directory, change the shortcut an run it?
 
 <div style="text-align: center">
-    <img src="https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1LVNvGPGQCnGZ6XXnRnz%2Fuploads%2FLJkoTumaUAFTM734DdXH%2Fimage.png?alt=media&token=c60d0413-5e33-456b-ad81-00675e5f4d53" onerror=alert("missing dependencies")/>
+    <img src="https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1LVNvGPGQCnGZ6XXnRnz%2Fuploads%2FLJkoTumaUAFTM734DdXH%2Fimage.png?alt=media&token=c60d0413-5e33-456b-ad81-00675e5f4d53"/>
 </div>
 
 <p>Our payload runs:</p>
@@ -35,8 +35,10 @@ So what if we place a payload in the app directory, change the shortcut an run i
 2. Place our payload on the latest app package directory.
 3. Change the Shortcut to lunch our payload instead of the discord binary.
 
-<p>Part 1 - Find the latest version of the app package</p>
+</br>
+<h2>Finding the latest version of the app package</h2>
 
 The version of the app is inside a file located on: ``%localappdata%\Discord\packages\RELEASES`` 
 
-If we check the contents of this file, we have something like this: ``230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477``
+If we check the contents of this file, we have something like this: 
+```230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477```
