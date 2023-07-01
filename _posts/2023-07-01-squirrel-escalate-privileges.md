@@ -64,4 +64,4 @@ private string GetVersion(string fullPath)
 }
 ```
 
-The ``fullPath`` is the root directory: ``%localappdata%\Discord``.
+The ``fullPath`` is the root directory of discord: ``%localappdata%\Discord``.
