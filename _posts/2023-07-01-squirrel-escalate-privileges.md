@@ -4,7 +4,7 @@ categories:
 tags:
   - squirrel-framwork
 ---
-<img  src="x:gif" onerror="window['al\u0065rt'](0)"></img>
+
 The [Squirrel framework](https://github.com/Squirrel/Squirrel.Windows) can be used to trick the user and escalate privileges.
 
 In this example we will check Discord, which uses Squirrel for updating.
