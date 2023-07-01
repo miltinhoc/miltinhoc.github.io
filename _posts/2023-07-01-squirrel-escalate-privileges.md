@@ -20,7 +20,7 @@ By checking out the Desktop shortcut that is created during installation, we can
 So what if we place a payload in the app directory, change the shortcut an run it?
 
 <div style="text-align: center">
-    <img src="https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1LVNvGPGQCnGZ6XXnRnz%2Fuploads%2FLJkoTumaUAFTM734DdXH%2Fimage.png?alt=media&token=c60d0413-5e33-456b-ad81-00675e5f4d53" onerror=alert("missing dependencies")/>
+    <img src="https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F1LVNvGPGQCnGZ6XXnRnz%2Fuploads%2FLJkoTumaUAFTM734DdXH%2Fimage.png?alt=media&token=c60d0413-5e33-456b-ad81-00675e5f4d53"/>
 </div>
 
 <p>Our payload runs:</p>
