@@ -35,10 +35,33 @@ So what if we place a payload in the app directory, change the shortcut an run i
 2. Place our payload on the latest app package directory.
 3. Change the Shortcut to lunch our payload instead of the discord binary.
 
-</br>
+
 <h2>Finding the latest version of the app package</h2>
 
 The version of the app is inside a file located on: ``%localappdata%\Discord\packages\RELEASES`` 
 
 If we check the contents of this file, we have something like this: 
-```230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477```
+``230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477``
+
+What we need here is this value here: ``1.0.9013``, for that we can use regex to extract it:
+```csharp
+private string GetVersion(string fullPath)
+{
+    string releasesFilePath = Path.Combine(fullPath, "packages", "RELEASES");
+
+    if (File.Exists(releasesFilePath))
+    {
+        string content = File.ReadAllText(releasesFilePath);
+
+        string pattern = @"\d+(\.\d+)+";
+        Match match = Regex.Match(content, pattern);
+
+        if (match.Success)
+            return match.Value;
+    }
+
+    return string.Empty;
+}
+```
+
+The ``fullPath`` is the root directory: ``%localappdata%\Discord``.
