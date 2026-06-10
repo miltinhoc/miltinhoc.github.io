@@ -358,6 +358,18 @@ body.home-page .site-header .wrap { justify-content: flex-end; }
   background: rgba(255, 255, 255, 0.02);
 }
 
+/* Card meta row: date · reading time */
+.post-card .card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--fg-mute);
+  letter-spacing: 0.05em;
+}
+.post-card .card-meta .meta-dot { color: var(--accent); }
+
 /* Post page */
 .post { padding: 2.5rem 0 5rem; }
 .post-header {
@@ -461,6 +473,42 @@ body.home-page .site-header .wrap { justify-content: flex-end; }
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: anywhere;
+}
+
+/* Prism toolbar (copy button + language label). The plugin's own stylesheet
+   is intentionally not loaded; all positioning and theming lives here. */
+div.code-toolbar { position: relative; }
+div.code-toolbar > .toolbar {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.6rem;
+  display: flex;
+  gap: 0.4rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+div.code-toolbar:hover > .toolbar,
+div.code-toolbar:focus-within > .toolbar { opacity: 1; }
+@media (hover: none) {
+  div.code-toolbar > .toolbar { opacity: 1; }
+}
+div.code-toolbar > .toolbar > .toolbar-item > button,
+div.code-toolbar > .toolbar > .toolbar-item > span {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  color: var(--fg-dim);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  padding: 0.3rem 0.55rem;
+  box-shadow: none;
+}
+div.code-toolbar > .toolbar > .toolbar-item > button { cursor: pointer; }
+div.code-toolbar > .toolbar > .toolbar-item > button:hover,
+div.code-toolbar > .toolbar > .toolbar-item > button:focus {
+  color: var(--accent-soft);
+  border-color: var(--accent);
 }
 
 /* Images */

