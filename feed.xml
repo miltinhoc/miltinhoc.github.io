@@ -102,7 +102,7 @@ whitelist.scams.manual
 <div class="callout callout-info">
 <p>A few filters that are present but don't seem to be loaded by the engine: (<code>compromised</code>, <code>exploit</code>, <code>worm</code>, <code>whitelist.scams)</code></p>
 </div>
-<h3 id="reproducing-the-filter-in-c">Reproducing the filter in C\#</h3>
+<h3 id="reproducing-the-filter-in-c">Reproducing the filter in C#</h3>
 <p>Since all filter parameters are fully available after decompression, the lookup logic ports cleanly to any language. The following C# implementation mirrors the JS source:</p>
 <pre class="language-csharp"><code class="language-csharp">public class BloomFilter
 {
@@ -612,7 +612,7 @@ export function HUBBLE_SECRET_KEY() {
     return new TextDecoder().decode(dataBytes).slice(16);
 }
 </code></pre>
-<h3 id="a-minimal-hubble-client-in-c">A minimal Hubble client in C\#</h3>
+<h3 id="a-minimal-hubble-client-in-c">A minimal Hubble client in C#</h3>
 <pre class="language-csharp"><code class="language-csharp">using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
@@ -1089,7 +1089,7 @@ new MutationObserver(() =&gt; KillPopup()).observe(document.documentElement, {ch
   }
 }
 </code></pre>
-<h3 id="a-minimal-client-in-c">A minimal client in C\#</h3>
+<h3 id="a-minimal-client-in-c">A minimal client in C#</h3>
 <pre class="language-csharp"><code class="language-csharp">using Newtonsoft.Json;
 
 namespace ManifestUpdaterBrowserGuard
@@ -1413,7 +1413,6 @@ function startVerification() {
       <pubDate>Tue, 07 Apr 2026 00:00:00 +0000</pubDate>
       <category>malware-analysis</category>
       <category>https-mitm</category>
-      <category>iocs</category>
       <description>A 4-month-old typosquat campaign on ilspy.org delivers a trojanized PDF tool that installs a local HTTPS interception proxy and hijacks search traffic across every major engine.</description>
       <content:encoded><![CDATA[<h2 id="overview">Overview</h2>
 <p>Someone registered <strong>ilspy.org</strong> (the real site is <strong>ilspy.net</strong>) and is using it to push malware at .NET developers and security researchers via a Traffic Distribution System (TDS). The network rotates payloads, so you might get a different app/browser extension.</p>
@@ -2069,7 +2068,6 @@ using (var encryptedConnection = new SqliteConnection(encryptedConnectionString)
       <pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate>
       <category>privesc</category>
       <category>squirrel</category>
-      <category>discord</category>
       <description>Abusing the --processStart argument of Squirrel&#x27;s Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary&#x27;s UAC prompt.</description>
       <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
 <p>The <a href="https://github.com/Squirrel/Squirrel.Windows" target="_blank" rel="noopener noreferrer">Squirrel framework</a> is a widely used tool for managing software installation and updates in Windows desktop applications.</p>
