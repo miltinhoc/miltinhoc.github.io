@@ -3,23 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>404 | miltinh0c - Security Write-ups</title>
+<script>
+(function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);})();
+</script>
+<title>404 | msil.re</title>
 <meta name="description" content="page not found">
 <meta name="author" content="miltinh0c">
 <link rel="canonical" href="https://msil.re/404.html">
-<meta property="og:title" content="404 | miltinh0c - Security Write-ups">
+<meta property="og:title" content="404 | msil.re">
 <meta property="og:description" content="page not found">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://msil.re/404.html">
 <meta property="og:image" content="https://msil.re/assets/og.png">
-<meta property="og:image:alt" content="miltinh0c - Security Write-ups">
+<meta property="og:image:alt" content="msil.re">
 <meta property="og:site_name" content="miltinh0c">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="404 | miltinh0c - Security Write-ups">
+<meta name="twitter:title" content="404 | msil.re">
 <meta name="twitter:description" content="page not found">
 <meta name="twitter:image" content="https://msil.re/assets/og.png">
-<meta name="twitter:image:alt" content="miltinh0c - Security Write-ups">
-<meta name="theme-color" content="#14121a">
+<meta name="twitter:image:alt" content="msil.re">
+<meta name="theme-color" content="#0d0d11">
 <meta name="robots" content="index, follow, noai, noimageai">
 <meta name="googlebot" content="index, follow, noai, noimageai">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -31,11 +34,16 @@
 <body class="error-page">
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="index.html" aria-label="miltinh0c // blog">
-      <img src="assets/brand.png" alt="miltinh0c // blog" class="brand-logo">
+    <a class="brand" href="index.html" aria-label="msil.re">
+      <img src="assets/brand.png" alt="" class="brand-logo">
+      <span class="brand-name">msil.re</span>
     </a>
     <nav class="site-nav">
       <a href="about.html">about</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -71,6 +79,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
 <script>
+(function () {
+  var btn = document.querySelector('.theme-toggle');
+  if (!btn) return;
+  var meta = document.querySelector('meta[name="theme-color"]');
+  btn.addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    var next = cur === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    if (meta) meta.setAttribute('content', next === 'light' ? '#f7f7f9' : '#0d0d11');
+  });
+})();
 (function () {
   var links = document.querySelectorAll('.toc a');
   if (!links.length) return;
