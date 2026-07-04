@@ -92,12 +92,18 @@ a:hover { color: var(--accent); }
   .article-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
 }
 
-/* Right-side TOC */
+/* Right-side TOC. Capped to the viewport and scrollable, so long posts
+   (many headings) don't get their lower entries cut off by the sticky box;
+   the scroll-spy script keeps the active link scrolled into view. */
 .toc {
   position: sticky;
   top: 96px;
   align-self: start;
   font-size: 0.85rem;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.4rem;
 }
 .toc-title {
   margin: 0 0 1rem 0;
@@ -197,7 +203,7 @@ a:hover { color: var(--accent); }
 
 /* Intro (home) */
 .intro {
-  padding: 5rem 0 3.5rem;
+  padding: 3rem 0 3.5rem;
   max-width: 740px;
 }
 .intro-eyebrow {
@@ -702,7 +708,7 @@ div.code-toolbar > .toolbar > .toolbar-item > button:focus {
 }
 
 /* About page */
-.about-page main { padding: 5rem 0 6rem; }
+.about-page main { padding: 3rem 0 6rem; }
 .about-content { max-width: 640px; }
 .about-content h1 {
   font-size: 2.4rem;
@@ -784,3 +790,145 @@ div.code-toolbar > .toolbar > .toolbar-item > button:focus {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Homepage search */
+.search-wrap { margin: 0 0 2rem; }
+#search {
+  width: 100%;
+  max-width: 420px;
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  color: var(--fg);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+#search::placeholder { color: var(--fg-mute); }
+#search:focus { border-color: var(--accent); }
+.search-empty { color: var(--fg-dim); font-size: 0.95rem; margin: 0 0 1.5rem; }
+
+/* Tag pills as links */
+a.tag:hover { color: var(--accent); border-color: var(--accent); }
+.tag-count {
+  margin-left: 0.4rem;
+  color: var(--fg-mute);
+  font-weight: 500;
+}
+
+/* Tags + notes listing pages */
+.listing-page { padding: 3rem 0 5rem; max-width: 740px; }
+.listing-page h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0 0 1.5rem;
+}
+.listing-lead { color: var(--fg-dim); margin: 0 0 2.5rem; max-width: 60ch; }
+.tag-cloud { margin-bottom: 3rem; gap: 0.55rem; }
+.tag-cloud .tag { font-size: 0.78rem; padding: 0.35rem 0.75rem; }
+.tag-section { margin-bottom: 2.5rem; }
+.tag-section .section-title { margin-top: 0; }
+.notes-empty { color: var(--fg-mute); }
+
+/* Compact date + title rows (notes list, tag sections) */
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2rem;
+}
+.note-row {
+  display: flex;
+  gap: 1.25rem;
+  align-items: baseline;
+  padding: 0.65rem 0.25rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg);
+}
+.note-row:hover { color: var(--fg); background: var(--bg-elev); }
+.note-row time {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--fg-mute);
+  flex-shrink: 0;
+  min-width: 6.5rem;
+}
+.note-row-title { font-weight: 500; line-height: 1.4; }
+.note-row:hover .note-row-title { color: var(--accent-soft); }
+.all-notes {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--fg-dim);
+  padding: 0.75rem 0.25rem 0;
+}
+.all-notes:hover { color: var(--accent); }
+@media (max-width: 520px) {
+  .note-row { flex-direction: column; gap: 0.15rem; }
+}
+
+/* Related posts */
+.related { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.related-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-mute);
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.related-card:hover { background: var(--bg-elev); border-color: var(--border-strong); }
+.related-card-title { color: var(--fg); font-weight: 600; font-size: 0.95rem; line-height: 1.35; }
+.related-card:hover .related-card-title { color: var(--accent-soft); }
+.related-card-meta { font-size: 0.78rem; color: var(--fg-mute); }
+
+/* Comments (giscus) */
+.comments { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.comments-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-mute);
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+/* IOC appendix ({% iocs %} shortcode) */
+.post-body .iocs {
+  background: var(--bg-code);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+.post-body .iocs .iocs-label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.post-body .iocs > :last-child { margin-bottom: 0; }
+:root[data-theme="light"] .post-body .iocs { background: var(--bg-elev); }

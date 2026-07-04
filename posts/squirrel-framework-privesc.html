@@ -14,13 +14,13 @@
 <meta property="og:description" content="Abusing the --processStart argument of Squirrel's Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary's UAC prompt.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://msil.re/posts/squirrel-framework-privesc.html">
-<meta property="og:image" content="https://msil.re/assets/images/dotnetsquirell.png">
+<meta property="og:image" content="https://msil.re/assets/images/thumbs/squirrel-framework-privesc.png">
 <meta property="og:image:alt" content="Using Squirrel Framework to escalate privileges">
 <meta property="og:site_name" content="miltinh0c">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Using Squirrel Framework to escalate privileges | msil.re">
 <meta name="twitter:description" content="Abusing the --processStart argument of Squirrel's Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary's UAC prompt.">
-<meta name="twitter:image" content="https://msil.re/assets/images/dotnetsquirell.png">
+<meta name="twitter:image" content="https://msil.re/assets/images/thumbs/squirrel-framework-privesc.png">
 <meta name="twitter:image:alt" content="Using Squirrel Framework to escalate privileges">
 <meta name="theme-color" content="#0d0d11">
 <meta name="robots" content="index, follow, noai, noimageai">
@@ -30,13 +30,15 @@
 <link rel="alternate" type="application/rss+xml" title="miltinh0c - Security Write-ups" href="../feed.xml">
 <link rel="stylesheet" href="../assets/css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Using Squirrel Framework to escalate privileges", "description": "Abusing the --processStart argument of Squirrel's Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary's UAC prompt.", "image": "https://msil.re/assets/images/dotnetsquirell.png", "datePublished": "2024-01-15", "dateModified": "2024-01-15", "timeRequired": "PT3M", "author": {"@type": "Person", "name": "miltinh0c", "url": "https://github.com/miltinhoc"}, "publisher": {"@type": "Person", "name": "miltinh0c", "logo": {"@type": "ImageObject", "url": "https://msil.re/assets/favicon.svg"}}, "mainEntityOfPage": "https://msil.re/posts/squirrel-framework-privesc.html", "keywords": "privesc, squirrel, discord", "url": "https://msil.re/posts/squirrel-framework-privesc.html"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Using Squirrel Framework to escalate privileges", "description": "Abusing the --processStart argument of Squirrel's Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary's UAC prompt.", "image": "https://msil.re/assets/images/thumbs/squirrel-framework-privesc.png", "datePublished": "2024-01-15", "dateModified": "2024-01-15", "timeRequired": "PT3M", "author": {"@type": "Person", "name": "miltinh0c", "url": "https://github.com/miltinhoc"}, "publisher": {"@type": "Person", "name": "miltinh0c", "logo": {"@type": "ImageObject", "url": "https://msil.re/assets/favicon.svg"}}, "mainEntityOfPage": "https://msil.re/posts/squirrel-framework-privesc.html", "keywords": "privesc, squirrel, discord", "url": "https://msil.re/posts/squirrel-framework-privesc.html"}</script>
 <meta property="article:published_time" content="2024-01-15">
 <meta property="article:modified_time" content="2024-01-15">
 <meta property="article:author" content="miltinh0c">
 <meta property="article:tag" content="privesc">
 <meta property="article:tag" content="squirrel">
 <meta property="article:tag" content="discord">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 </head>
 <body class="post-page">
 <header class="site-header">
@@ -46,6 +48,8 @@
       <span class="brand-name">msil.re</span>
     </a>
     <nav class="site-nav">
+      <a href="../notes.html">notes</a>
+      <a href="../tags.html">tags</a>
       <a href="../about.html">about</a>
       <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
         <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -65,7 +69,7 @@
     </div>
     <h1 class="article-title">Using Squirrel Framework to escalate privileges</h1>
     <p class="article-summary">Abusing the --processStart argument of Squirrel&#x27;s Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary&#x27;s UAC prompt.</p>
-    <div class="tag-row"><span class="tag">privesc</span> <span class="tag">squirrel</span> <span class="tag">discord</span></div>
+    <div class="tag-row"><a class="tag" href="../tags.html#t-privesc">privesc</a> <a class="tag" href="../tags.html#t-squirrel">squirrel</a> <a class="tag" href="../tags.html#t-discord">discord</a></div>
   </header>
   <div class="post-body">
 <h2 id="introduction">Introduction</h2>
@@ -169,7 +173,14 @@
 <p>The Squirrel framework is widely adopted due to its ease of handling updates for desktop applications, but its design opens up potential risks for privilege escalation.</p>
 <p>As we’ve demonstrated with Discord, attackers can exploit signed binaries to make their actions appear legitimate, tricking users into unknowingly elevating privileges.</p>
   </div>
-  
+  <nav class="post-adj"><span class="adj empty"></span><a class="adj next" href="bypassing-hitmanpro-alert-credential-theft.html"><span class="dir">next &rarr;</span><span class="adj-title">Bypassing HitmanPro.Alert Credential-Theft protection</span></a></nav>
+
+  <section class="related" aria-label="Related posts">
+    <h2 class="related-title">More like this</h2>
+    <div class="related-grid"><a class="related-card" href="../posts/exploring-a-security-flaw-in-malwarebytes.html"><span class="related-card-title">Exploring a Security Flaw in Malwarebytes</span><span class="related-card-meta">Oct 30, 2024 &middot; 7 min read</span></a></div>
+  </section>
+
+
   <footer class="post-footer">
     <a class="back" href="../index.html">&larr; back to index</a>
   </footer>
@@ -217,6 +228,8 @@
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) {}
     if (meta) meta.setAttribute('content', next === 'light' ? '#f7f7f9' : '#0d0d11');
+    var giscus = document.querySelector('iframe.giscus-frame');
+    if (giscus) giscus.contentWindow.postMessage({ giscus: { setConfig: { theme: next } } }, 'https://giscus.app');
   });
 })();
 (function () {
@@ -235,6 +248,15 @@
       if (entry.isIntersecting) {
         links.forEach(function (l) { l.classList.remove('active'); });
         link.classList.add('active');
+        var toc = document.querySelector('.toc');
+        if (toc && toc.scrollHeight > toc.clientHeight) {
+          var top = link.offsetTop;
+          if (top < toc.scrollTop + 40) {
+            toc.scrollTop = top - 40;
+          } else if (top + link.offsetHeight > toc.scrollTop + toc.clientHeight - 40) {
+            toc.scrollTop = top + link.offsetHeight - toc.clientHeight + 40;
+          }
+        }
       }
     });
   }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });

@@ -39,6 +39,8 @@
       <span class="brand-name">msil.re</span>
     </a>
     <nav class="site-nav">
+      <a href="notes.html">notes</a>
+      <a href="tags.html">tags</a>
       <a href="about.html">about</a>
       <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
         <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -54,6 +56,8 @@
   <div class="post-body">
 <p>I'm <strong>Milton Cardoso</strong>.</p>
 <p>I work in offensive security. In my spare time I take antivirus products and .NET malware apart, and write up what I find here. Anything that turns out to be a vulnerability gets responsibly disclosed.</p>
+<h2 id="contact">Contact</h2>
+<p>Questions about a write-up, spotted a mistake, or want to talk? DM me on <a href="https://x.com/miltinh0c" target="_blank" rel="noopener noreferrer">X</a>.</p>
   </div>
 </article>
 </main>
@@ -91,6 +95,8 @@
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) {}
     if (meta) meta.setAttribute('content', next === 'light' ? '#f7f7f9' : '#0d0d11');
+    var giscus = document.querySelector('iframe.giscus-frame');
+    if (giscus) giscus.contentWindow.postMessage({ giscus: { setConfig: { theme: next } } }, 'https://giscus.app');
   });
 })();
 (function () {
@@ -109,6 +115,15 @@
       if (entry.isIntersecting) {
         links.forEach(function (l) { l.classList.remove('active'); });
         link.classList.add('active');
+        var toc = document.querySelector('.toc');
+        if (toc && toc.scrollHeight > toc.clientHeight) {
+          var top = link.offsetTop;
+          if (top < toc.scrollTop + 40) {
+            toc.scrollTop = top - 40;
+          } else if (top + link.offsetHeight > toc.scrollTop + toc.clientHeight - 40) {
+            toc.scrollTop = top + link.offsetHeight - toc.clientHeight + 40;
+          }
+        }
       }
     });
   }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });

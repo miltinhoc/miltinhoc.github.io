@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://msil.re/</loc></url>
+  <url><loc>https://msil.re/tags.html</loc></url>
+  <url><loc>https://msil.re/notes.html</loc></url>
   <url><loc>https://msil.re/about.html</loc></url>
   <url><loc>https://msil.re/posts/reversing-malwarebytes-browser-guard.html</loc></url>
   <url><loc>https://msil.re/posts/fake-ilspy-site-search-hijacker.html</loc></url>
@@ -8,4 +10,5 @@
   <url><loc>https://msil.re/posts/exploring-a-security-flaw-in-malwarebytes.html</loc></url>
   <url><loc>https://msil.re/posts/bypassing-hitmanpro-alert-credential-theft.html</loc></url>
   <url><loc>https://msil.re/posts/squirrel-framework-privesc.html</loc></url>
+  <url><loc>https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html</loc></url>
 </urlset>

@@ -39,6 +39,8 @@
       <span class="brand-name">msil.re</span>
     </a>
     <nav class="site-nav">
+      <a href="notes.html">notes</a>
+      <a href="tags.html">tags</a>
       <a href="about.html">about</a>
       <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">
         <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
@@ -54,10 +56,14 @@
   <h1>Reverse engineering, malware analysis, and offensive security write-ups.</h1>
   <p>Notes and write-ups on antivirus internals, .NET reverse engineering, and malware analysis.</p>
 </section>
+<div class="search-wrap">
+  <input id="search" type="search" placeholder="Search posts&hellip;" autocomplete="off" spellcheck="false" aria-label="Search posts">
+</div>
 <h2 class="section-title">Latest posts</h2>
+<p id="search-empty" class="search-empty" hidden>No posts match that search.</p>
 <section id="posts" class="posts">
 
-  <article class="post-card">
+  <article class="post-card" data-url="posts/reversing-malwarebytes-browser-guard.html">
     <a href="posts/reversing-malwarebytes-browser-guard.html" class="post-card-link">
       <div class="post-card-thumb"><img src="assets/images/browserguard.png" alt="" loading="lazy"></div>
       <div class="post-card-content">
@@ -69,7 +75,7 @@
     </a>
   </article>
 
-  <article class="post-card">
+  <article class="post-card" data-url="posts/fake-ilspy-site-search-hijacker.html">
     <a href="posts/fake-ilspy-site-search-hijacker.html" class="post-card-link">
       <div class="post-card-thumb"><img src="assets/images/pdflab.png" alt="" loading="lazy"></div>
       <div class="post-card-content">
@@ -81,7 +87,7 @@
     </a>
   </article>
 
-  <article class="post-card">
+  <article class="post-card" data-url="posts/digging-into-malwarebytes-support-tool.html">
     <a href="posts/digging-into-malwarebytes-support-tool.html" class="post-card-link">
       <div class="post-card-thumb"><img src="assets/images/mbsupport.png" alt="" loading="lazy"></div>
       <div class="post-card-content">
@@ -93,9 +99,9 @@
     </a>
   </article>
 
-  <article class="post-card">
+  <article class="post-card" data-url="posts/exploring-a-security-flaw-in-malwarebytes.html">
     <a href="posts/exploring-a-security-flaw-in-malwarebytes.html" class="post-card-link">
-      <div class="post-card-thumb no-image"></div>
+      <div class="post-card-thumb"><img src="assets/images/thumbs/exploring-a-security-flaw-in-malwarebytes.png" alt="" loading="lazy"></div>
       <div class="post-card-content">
         <div class="tag-row"><span class="tag">reverse-engineering</span> <span class="tag">malwarebytes</span> <span class="tag">privesc</span></div>
         <h3 class="post-card-title">Exploring a Security Flaw in Malwarebytes</h3>
@@ -105,7 +111,7 @@
     </a>
   </article>
 
-  <article class="post-card">
+  <article class="post-card" data-url="posts/bypassing-hitmanpro-alert-credential-theft.html">
     <a href="posts/bypassing-hitmanpro-alert-credential-theft.html" class="post-card-link">
       <div class="post-card-thumb"><img src="assets/images/hitmanproalert.png" alt="" loading="lazy"></div>
       <div class="post-card-content">
@@ -117,7 +123,7 @@
     </a>
   </article>
 
-  <article class="post-card">
+  <article class="post-card" data-url="posts/squirrel-framework-privesc.html">
     <a href="posts/squirrel-framework-privesc.html" class="post-card-link">
       <div class="post-card-thumb"><img src="assets/images/dotnetsquirell.png" alt="" loading="lazy"></div>
       <div class="post-card-content">
@@ -128,7 +134,15 @@
       </div>
     </a>
   </article>
-</section></main>
+</section>
+<h2 class="section-title">Latest notes</h2>
+<section class="notes-list">
+<a class="note-row" href="notes/abusing-cape-sandbox-from-the-inside.html"><time datetime="2026-07-04">Jul 4, 2026</time><span class="note-row-title">Abusing CAPE Sandbox from the Inside</span></a>
+  <a class="all-notes" href="notes.html">all notes &rarr;</a>
+</section>
+
+<script src="assets/js/search.js" defer></script>
+</main>
 <footer class="site-footer">
   <div class="wrap">
     <nav class="socials" aria-label="Social links">
@@ -163,6 +177,8 @@
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) {}
     if (meta) meta.setAttribute('content', next === 'light' ? '#f7f7f9' : '#0d0d11');
+    var giscus = document.querySelector('iframe.giscus-frame');
+    if (giscus) giscus.contentWindow.postMessage({ giscus: { setConfig: { theme: next } } }, 'https://giscus.app');
   });
 })();
 (function () {
@@ -181,6 +197,15 @@
       if (entry.isIntersecting) {
         links.forEach(function (l) { l.classList.remove('active'); });
         link.classList.add('active');
+        var toc = document.querySelector('.toc');
+        if (toc && toc.scrollHeight > toc.clientHeight) {
+          var top = link.offsetTop;
+          if (top < toc.scrollTop + 40) {
+            toc.scrollTop = top - 40;
+          } else if (top + link.offsetHeight > toc.scrollTop + toc.clientHeight - 40) {
+            toc.scrollTop = top + link.offsetHeight - toc.clientHeight + 40;
+          }
+        }
       }
     });
   }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });

