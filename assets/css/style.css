@@ -736,7 +736,6 @@ div.code-toolbar > .toolbar > .toolbar-item > button:focus {
 .site-footer {
   border-top: 1px solid var(--border);
   padding: 1.5rem 0;
-  margin-top: 4rem;
 }
 .site-footer .wrap { display: flex; justify-content: center; }
 .socials {
@@ -772,7 +771,7 @@ div.code-toolbar > .toolbar > .toolbar-item > button:focus {
   .intro { padding: 3rem 0 2rem; }
   .intro h1 { font-size: 2rem; }
   .intro p { font-size: 1.05rem; }
-  .article-layout { padding: 2.5rem 0 4rem; }
+  .article-layout { padding: 2.5rem; }
   .article-title { font-size: 1.9rem; }
   .article-summary { font-size: 1.05rem; }
   .post-body { font-size: 1rem; }
