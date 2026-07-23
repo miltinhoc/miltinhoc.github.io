@@ -6,6 +6,13 @@
 <script>
 (function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);})();
 </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-W86JPFRPVX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-W86JPFRPVX');
+</script>
 <title>msil.re</title>
 <meta name="description" content="Reverse engineering, malware analysis, and offensive security write-ups.">
 <meta name="author" content="miltinh0c">
@@ -56,81 +63,87 @@
   <h1>Reverse engineering, malware analysis, and offensive security write-ups.</h1>
   <p>Notes and write-ups on antivirus internals, .NET reverse engineering, and malware analysis.</p>
 </section>
-<div class="search-wrap">
-  <input id="search" type="search" placeholder="Search posts&hellip;" autocomplete="off" spellcheck="false" aria-label="Search posts">
+<div class="controls">
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search" type="search" placeholder="Search posts&hellip;" autocomplete="off" spellcheck="false" aria-label="Search posts">
+  </div>
+  <div class="filters" id="filters"><button class="chip" type="button" aria-pressed="true" data-tag="all">all</button><button class="chip" type="button" aria-pressed="false" data-tag="malwarebytes">malwarebytes</button><button class="chip" type="button" aria-pressed="false" data-tag="reverse-engineering">reverse-engineering</button><button class="chip" type="button" aria-pressed="false" data-tag="privesc">privesc</button><button class="chip" type="button" aria-pressed="false" data-tag="browser-extension">browser-extension</button><button class="chip" type="button" aria-pressed="false" data-tag="bypass">bypass</button></div>
 </div>
-<h2 class="section-title">Latest posts</h2>
-<p id="search-empty" class="search-empty" hidden>No posts match that search.</p>
+
+<div id="featured-wrap">
+<h2 class="section-title">Featured</h2>
+<a class="featured" href="posts/reversing-malwarebytes-browser-guard.html">
+  <div class="featured-thumb"><img src="assets/images/browserguard.png" alt="" loading="lazy"></div>
+  <div class="featured-body">
+    <span class="featured-flag">Featured deep-dive</span>
+    <h3>Reverse engineering Malwarebytes Browser Guard</h3>
+    <p>Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.</p>
+    <div class="featured-meta">May 20, 2026 &middot; 36 min read</div>
+  </div>
+</a>
+</div>
+
+<h2 class="section-title">Latest posts <span class="count" id="post-count"></span></h2>
+<p id="search-empty" class="search-empty" hidden>No posts match that filter.</p>
 <section id="posts" class="posts">
 
-  <article class="post-card" data-url="posts/reversing-malwarebytes-browser-guard.html">
-    <a href="posts/reversing-malwarebytes-browser-guard.html" class="post-card-link">
-      <div class="post-card-thumb"><img src="assets/images/browserguard.png" alt="" loading="lazy"></div>
-      <div class="post-card-content">
-        <div class="tag-row"><span class="tag">reverse-engineering</span> <span class="tag">browser-extension</span> <span class="tag">malwarebytes</span> <span class="tag">javascript</span></div>
-        <h3 class="post-card-title">Reverse engineering Malwarebytes Browser Guard</h3>
-        <p class="post-card-summary">Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.</p>
-        <div class="post-card-meta">May 20, 2026 &middot; 36 min read</div>
-      </div>
-    </a>
-  </article>
-
-  <article class="post-card" data-url="posts/fake-ilspy-site-search-hijacker.html">
+  <article class="post-card" data-url="posts/fake-ilspy-site-search-hijacker.html" data-tags="malware-analysis https-mitm iocs">
     <a href="posts/fake-ilspy-site-search-hijacker.html" class="post-card-link">
-      <div class="post-card-thumb"><img src="assets/images/pdflab.png" alt="" loading="lazy"></div>
+      <div class="post-card-thumb"><img src="assets/images/pdflab.png" alt="" loading="lazy"><span class="read-badge">6 min</span></div>
       <div class="post-card-content">
         <div class="tag-row"><span class="tag">malware-analysis</span> <span class="tag">https-mitm</span> <span class="tag">iocs</span></div>
         <h3 class="post-card-title">Fake ILSpy Site Delivers Search-Hijacking Malware</h3>
         <p class="post-card-summary">A 4-month-old typosquat campaign on ilspy.org delivers a trojanized PDF tool that installs a local HTTPS interception proxy and hijacks search traffic across every major engine.</p>
-        <div class="post-card-meta">Apr 7, 2026 &middot; 6 min read</div>
+        <div class="post-card-meta">Apr 7, 2026</div>
       </div>
     </a>
   </article>
 
-  <article class="post-card" data-url="posts/digging-into-malwarebytes-support-tool.html">
+  <article class="post-card" data-url="posts/digging-into-malwarebytes-support-tool.html" data-tags="reverse-engineering malwarebytes dotnet">
     <a href="posts/digging-into-malwarebytes-support-tool.html" class="post-card-link">
-      <div class="post-card-thumb"><img src="assets/images/mbsupport.png" alt="" loading="lazy"></div>
+      <div class="post-card-thumb"><img src="assets/images/mbsupport.png" alt="" loading="lazy"><span class="read-badge">10 min</span></div>
       <div class="post-card-content">
-        <div class="tag-row"><span class="tag">reverse-engineering</span> <span class="tag">malwarebytes</span> <span class="tag">dotnet</span></div>
+        <div class="tag-row"><span class="series-badge">malwarebytes</span> <span class="tag">reverse-engineering</span> <span class="tag">malwarebytes</span> <span class="tag">dotnet</span></div>
         <h3 class="post-card-title">Digging Into Malwarebytes Support Tool</h3>
         <p class="post-card-summary">Reverse engineering the Malwarebytes Support Tool: reading exclusions without admin, real-time threat notification tracking via WAL forcing, silent uninstalls and a subscription unredeem path.</p>
-        <div class="post-card-meta">Oct 2, 2025 &middot; 10 min read</div>
+        <div class="post-card-meta">Oct 2, 2025</div>
       </div>
     </a>
   </article>
 
-  <article class="post-card" data-url="posts/exploring-a-security-flaw-in-malwarebytes.html">
+  <article class="post-card" data-url="posts/exploring-a-security-flaw-in-malwarebytes.html" data-tags="reverse-engineering malwarebytes privesc">
     <a href="posts/exploring-a-security-flaw-in-malwarebytes.html" class="post-card-link">
-      <div class="post-card-thumb"><img src="assets/images/thumbs/exploring-a-security-flaw-in-malwarebytes.png" alt="" loading="lazy"></div>
+      <div class="post-card-thumb"><img src="assets/images/thumbs/exploring-a-security-flaw-in-malwarebytes.png" alt="" loading="lazy"><span class="read-badge">7 min</span></div>
       <div class="post-card-content">
-        <div class="tag-row"><span class="tag">reverse-engineering</span> <span class="tag">malwarebytes</span> <span class="tag">privesc</span></div>
+        <div class="tag-row"><span class="series-badge">malwarebytes</span> <span class="tag">reverse-engineering</span> <span class="tag">malwarebytes</span> <span class="tag">privesc</span></div>
         <h3 class="post-card-title">Exploring a Security Flaw in Malwarebytes</h3>
         <p class="post-card-summary">Two assistant binaries, near-identical code, very different blast radius. A path from .NET tampering to disabling Malwarebytes self-protection without admin.</p>
-        <div class="post-card-meta">Oct 30, 2024 &middot; 7 min read</div>
+        <div class="post-card-meta">Oct 30, 2024</div>
       </div>
     </a>
   </article>
 
-  <article class="post-card" data-url="posts/bypassing-hitmanpro-alert-credential-theft.html">
+  <article class="post-card" data-url="posts/bypassing-hitmanpro-alert-credential-theft.html" data-tags="bypass infostealer dpapi">
     <a href="posts/bypassing-hitmanpro-alert-credential-theft.html" class="post-card-link">
-      <div class="post-card-thumb"><img src="assets/images/hitmanproalert.png" alt="" loading="lazy"></div>
+      <div class="post-card-thumb"><img src="assets/images/hitmanproalert.png" alt="" loading="lazy"><span class="read-badge">4 min</span></div>
       <div class="post-card-content">
         <div class="tag-row"><span class="tag">bypass</span> <span class="tag">infostealer</span> <span class="tag">dpapi</span></div>
         <h3 class="post-card-title">Bypassing HitmanPro.Alert Credential-Theft protection</h3>
         <p class="post-card-summary">A simple swap of the Chromium Local State master key tricks HitmanPro.Alert&#x27;s anti-credential-theft module into looking the other way.</p>
-        <div class="post-card-meta">Mar 1, 2024 &middot; 4 min read</div>
+        <div class="post-card-meta">Mar 1, 2024</div>
       </div>
     </a>
   </article>
 
-  <article class="post-card" data-url="posts/squirrel-framework-privesc.html">
+  <article class="post-card" data-url="posts/squirrel-framework-privesc.html" data-tags="privesc squirrel discord">
     <a href="posts/squirrel-framework-privesc.html" class="post-card-link">
-      <div class="post-card-thumb"><img src="assets/images/dotnetsquirell.png" alt="" loading="lazy"></div>
+      <div class="post-card-thumb"><img src="assets/images/dotnetsquirell.png" alt="" loading="lazy"><span class="read-badge">3 min</span></div>
       <div class="post-card-content">
         <div class="tag-row"><span class="tag">privesc</span> <span class="tag">squirrel</span> <span class="tag">discord</span></div>
         <h3 class="post-card-title">Using Squirrel Framework to escalate privileges</h3>
         <p class="post-card-summary">Abusing the --processStart argument of Squirrel&#x27;s Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary&#x27;s UAC prompt.</p>
-        <div class="post-card-meta">Jan 15, 2024 &middot; 3 min read</div>
+        <div class="post-card-meta">Jan 15, 2024</div>
       </div>
     </a>
   </article>

@@ -1,10 +1,15 @@
 (function () {
+  var grid = document.getElementById('posts');
+  if (!grid) return;
   var input = document.getElementById('search');
-  if (!input) return;
-  var cards = Array.prototype.slice.call(document.querySelectorAll('.post-card'));
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.post-card'));
+  var chips = Array.prototype.slice.call(document.querySelectorAll('#filters .chip'));
   var empty = document.getElementById('search-empty');
+  var countEl = document.getElementById('post-count');
+  var featuredWrap = document.getElementById('featured-wrap');
   var index = null;
   var pending = null;
+  var activeTag = 'all';
 
   function load(cb) {
     if (index) { cb(index); return; }
@@ -26,11 +31,32 @@
     xhr.send();
   }
 
-  function apply(q) {
-    q = q.trim().toLowerCase();
+  function tagOk(card) {
+    if (activeTag === 'all') return true;
+    var tags = ' ' + (card.getAttribute('data-tags') || '') + ' ';
+    return tags.indexOf(' ' + activeTag + ' ') !== -1;
+  }
+
+  function finish(shown) {
+    if (empty) empty.hidden = shown !== 0;
+    if (countEl) countEl.textContent = shown + (shown === 1 ? ' post' : ' posts');
+    // The featured pick is a curated "start here"; hide it once a filter narrows the list.
+    if (featuredWrap) {
+      var filtering = activeTag !== 'all' || (input && input.value.trim() !== '');
+      featuredWrap.style.display = filtering ? 'none' : '';
+    }
+  }
+
+  function apply() {
+    var q = input ? input.value.trim().toLowerCase() : '';
     if (!q) {
-      for (var i = 0; i < cards.length; i++) cards[i].style.display = '';
-      if (empty) empty.hidden = true;
+      var shown = 0;
+      for (var i = 0; i < cards.length; i++) {
+        var ok = tagOk(cards[i]);
+        cards[i].style.display = ok ? '' : 'none';
+        if (ok) shown++;
+      }
+      finish(shown);
       return;
     }
     load(function (idx) {
@@ -40,18 +66,29 @@
       var shown = 0;
       for (var i = 0; i < cards.length; i++) {
         var card = cards[i];
-        var entry = idx[card.getAttribute('data-url')];
-        var hay = entry ? entry.text : card.textContent.toLowerCase();
-        var ok = true;
-        for (var t = 0; t < terms.length; t++) {
-          if (hay.indexOf(terms[t]) === -1) { ok = false; break; }
+        var ok = tagOk(card);
+        if (ok) {
+          var entry = idx[card.getAttribute('data-url')];
+          var hay = entry ? entry.text : card.textContent.toLowerCase();
+          for (var t = 0; t < terms.length; t++) {
+            if (hay.indexOf(terms[t]) === -1) { ok = false; break; }
+          }
         }
         card.style.display = ok ? '' : 'none';
         if (ok) shown++;
       }
-      if (empty) empty.hidden = shown !== 0;
+      finish(shown);
     });
   }
 
-  input.addEventListener('input', function () { apply(input.value); });
+  if (input) input.addEventListener('input', apply);
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+      chip.setAttribute('aria-pressed', 'true');
+      activeTag = chip.getAttribute('data-tag');
+      apply();
+    });
+  });
+  apply();
 })();

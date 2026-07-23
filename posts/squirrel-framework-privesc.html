@@ -6,6 +6,13 @@
 <script>
 (function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);})();
 </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-W86JPFRPVX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-W86JPFRPVX');
+</script>
 <title>Using Squirrel Framework to escalate privileges | msil.re</title>
 <meta name="description" content="Abusing the --processStart argument of Squirrel's Update.exe (Discord, Slack, GitHub Desktop, ...) to launch a payload from a signed binary's UAC prompt.">
 <meta name="author" content="miltinh0c">
