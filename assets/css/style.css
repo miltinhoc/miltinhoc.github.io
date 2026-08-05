@@ -484,6 +484,21 @@ a:hover { color: var(--accent); }
   overflow-wrap: anywhere;
 }
 
+/* Prism highlights HTML/XML tags as <span class="token tag">, whose `tag` class
+   collides with the site's .tag pill utility -- wrapping every tag token in a
+   bordered, uppercased chip. Neutralize the pill styling (not the token color,
+   which comes from the higher-specificity .token.tag rule) inside code blocks. */
+.post-body pre .token.tag {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 /* Prism toolbar (copy button + language label). The plugin's own stylesheet
    is intentionally not loaded; all positioning and theming lives here. */
 div.code-toolbar { position: relative; }
@@ -650,7 +665,7 @@ div.code-toolbar > .toolbar > .toolbar-item > button:focus {
 }
 .post-body details > summary::-webkit-details-marker { display: none; }
 .post-body details > summary::before {
-  content: "▶";
+  content: "\25B6";
   color: var(--accent);
   font-size: 0.7em;
   transition: transform 0.15s ease;
@@ -903,7 +918,6 @@ div.code-toolbar > .toolbar > .toolbar-item > button:focus {
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
 }
-.featured-flag::before { content: "\2605"; font-size: 0.8em; }
 .featured h3 {
   font-size: 1.7rem;
   line-height: 1.25;

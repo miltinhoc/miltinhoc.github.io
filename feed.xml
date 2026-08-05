@@ -2063,7 +2063,7 @@ var response = await client.SendAsync(request);
 <p>They always start with <code>os_version_</code>, followed by your Windows version (with <code>.</code> replaced by <code>_</code>), and then the architecture.</p>
 <p>Examples:</p>
 <ul><li><code>os_version_windows_10_64_bit</code></li><li><code>os_version_windows_8_1_64_bit</code></li><li><code>os_version_windows_8_32_bit</code></li></ul>
-<p>😏 <strong>Next malware idea:</strong> Infects victim ➨ Opens 1,000 Malwarebytes support tickets ➨ Exits</p>
+<p>😏 <strong>Next malware idea:</strong> Infects victim -&gt; Opens 1,000 Malwarebytes support tickets -&gt; Exits</p>
 <h3 id="silent-uninstall">Silent uninstall</h3>
 <p>You can actually uninstall Malwarebytes silently. </p>
 <p>To do this, you only need to:</p>
