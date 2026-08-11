@@ -81,8 +81,8 @@
   </header>
   <div class="post-body">
 <h2 id="introduction">Introduction</h2>
-<p>Today’s antivirus software does much more than just sit on your computer. To keep you safe from malicious websites, fake emails, and sneaky downloads, many companies use browser extensions.</p>
-<p>These sometimes work together with locally installed antivirus software to protect you while you’re browsing the internet.</p>
+<p>Today's antivirus software does much more than just sit on your computer. To keep you safe from malicious websites, fake emails, and sneaky downloads, many companies use browser extensions.</p>
+<p>These sometimes work together with locally installed antivirus software to protect you while you're browsing the internet.</p>
 <p>Now imagine performing a completely normal action, like clicking "Accept Cookies" or solving a captcha (things you might do many times a day while visiting websites), on a webpage you just visited and behind the scenes your antivirus adds a web exclusion for a malicious domain.</p>
 <h2 id="background">Background</h2>
 <p>While researching how <a href="https://www.malwarebytes.com/browserguard" target="_blank" rel="noopener noreferrer"><strong>Browser Guard</strong></a> detects malicious websites (<a href="https://msil.re/posts/reversing-malwarebytes-browser-guard.html" target="_blank" rel="noopener noreferrer">check it here</a>), I randomly came across a DEF CON 33 talk by Marek Tóth on <a href="https://marektoth.com/blog/dom-based-extension-clickjacking/" target="_blank" rel="noopener noreferrer"><strong>DOM-based extension clickjacking</strong></a>.</p>
@@ -111,10 +111,10 @@
 <p>A plain iframe is enough to prove the vulnerability, but it helps to show the attack the way a victim would actually see it, so I wrapped it in something people click without thinking, a fake captcha.</p>
 <p><strong>Setup:</strong></p>
 <ul><li>A "Verify you are human" captcha as a decoy.</li><li>The real Browser Guard UI loaded on top in an iframe at very low opacity, so it is there and clickable but effectively invisible.</li><li>The invisible iframe lined up so the button I care about sits right under the part of the decoy the victim is about to click.</li></ul>
-<p>To the victim it looks like an ordinary captcha. The Browser Guard UI is sitting right on top of it, invisible but fully clickable, so every click meant for the captcha lands on the extension instead.</p>
+<p>To the victim it looks like a normal captcha. The Browser Guard UI sits on top of it, invisible but fully clickable.</p>
 <h3 id="two-attack-variants">Two attack variants</h3>
 <h4 id="one-click">One click</h4>
-<p>Put the popup's Malware toggle under the decoy. One clickjacked click turns it off, and Browser Guard stops applying malware protection on the site the victim is on.</p>
+<p>Put the popup's Malware toggle under the decoy. One click turns it off, and Browser Guard stops applying malware protection on the site the victim is on.</p>
 <p>You might ask what the point is if the victim is already on the site. The point is everything Browser Guard does after the page loads. One example is its ClickFix / clipboard protection.</p>
 <div class="callout callout-info">
 <p><strong>ClickFix</strong> is a prominent social engineering and copy-paste cyberattack technique where malicious websites trick users into manually executing harmful system commands. Attackers use fake error messages, browser crashes, or phony CAPTCHA verifications (such as fake Cloudflare or Google prompts) to convince victims to press keys like <code>Windows + R</code>, paste hidden clipboard code (<code>Ctrl + V</code>), and hit <code>Enter</code>.</p>
