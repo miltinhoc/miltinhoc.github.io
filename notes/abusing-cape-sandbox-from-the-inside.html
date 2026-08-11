@@ -228,8 +228,8 @@ public class CapeRequest
 }
 </code></pre>
 <p>Originally this was enough, the fake requests showed up in the sandbox report / VirusTotal <strong>Network Communication</strong> tab straight from that POST.</p>
-<h3 id="update-the-post-no-longer-lands-drop-the-file-instead">Update: the POST no longer lands, drop the file instead</h3>
-<p>That POST is how this worked originally. A later CAPE change seems to have broke it. The data still reaches the agent (the endpoint keeps returning <code>{&quot;message&quot;: &quot;OK&quot;, ...}</code>), but it never makes it into the report anymore. The problem is a mismatch between where the agent writes the file and where the collector looks for it.</p>
+<h3 id="update-the-post-no-longer-works">Update: the POST no longer works</h3>
+<p>That POST is how it worked originally. A later CAPE change seems to have broke it. The data still reaches the agent (the endpoint keeps returning <code>{&quot;message&quot;: &quot;OK&quot;, ...}</code>), but it never makes it into the report anymore. The problem appears to be a mismatch between where the agent writes the file and where the collector looks for it.</p>
 <p>The agent writes the posted <code>networkData</code> into a fresh temp subdirectory:</p>
 <pre class="language-python"><code class="language-python">ext_tmpdir = tempfile.mkdtemp(prefix=&quot;&quot;) # for example %TEMP%\sdbdz33h (no &quot;tmp&quot; prefix)
 ext_filepath = &quot;bext_&quot; + &quot;&quot;.join(random.choice(string.ascii_letters) for _ in range(11)) + &quot;.json&quot;
@@ -422,7 +422,7 @@ await SetCapeStatus(CapeStatus.Complete, &quot;True&quot;);
 <aside class="toc" aria-label="On this page">
   <h4 class="toc-title">On this page</h4>
   <nav class="toc-nav">
-<a class="toc-h2" href="#what-is-cape-sandbox">What is CAPE Sandbox</a><a class="toc-h2" href="#how-the-browser-extension-works">How the Browser Extension Works</a><a class="toc-h2" href="#the-http-logging-endpoint">The HTTP Logging Endpoint</a><a class="toc-h2" href="#detecting-cape">Detecting CAPE</a><a class="toc-h2" href="#the-json-payload-format">The JSON Payload Format</a><a class="toc-h2" href="#spoofing-network-traffic">Spoofing Network Traffic</a><a class="toc-h3" href="#update-the-post-no-longer-lands-drop-the-file-instead">Update: the POST no longer lands, drop the file instead</a><a class="toc-h3" href="#c-example">C# example</a><a class="toc-h2" href="#the-other-reachable-route-status">The Other Reachable Route: /status</a><a class="toc-h2" href="#consequences">Consequences</a><a class="toc-h2" href="#conclusion">Conclusion</a>
+<a class="toc-h2" href="#what-is-cape-sandbox">What is CAPE Sandbox</a><a class="toc-h2" href="#how-the-browser-extension-works">How the Browser Extension Works</a><a class="toc-h2" href="#the-http-logging-endpoint">The HTTP Logging Endpoint</a><a class="toc-h2" href="#detecting-cape">Detecting CAPE</a><a class="toc-h2" href="#the-json-payload-format">The JSON Payload Format</a><a class="toc-h2" href="#spoofing-network-traffic">Spoofing Network Traffic</a><a class="toc-h3" href="#update-the-post-no-longer-works">Update: the POST no longer works</a><a class="toc-h3" href="#c-example">C# example</a><a class="toc-h2" href="#the-other-reachable-route-status">The Other Reachable Route: /status</a><a class="toc-h2" href="#consequences">Consequences</a><a class="toc-h2" href="#conclusion">Conclusion</a>
   </nav>
 </aside>
 

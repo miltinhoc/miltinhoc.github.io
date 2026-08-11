@@ -5,8 +5,109 @@
     <link>https://msil.re/</link>
     <description>Reverse engineering, malware analysis, and offensive security write-ups.</description>
     <language>en</language>
-    <lastBuildDate>Sat, 04 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Aug 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://msil.re/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>From a Browser Click to a Local AV Exclusion</title>
+      <link>https://msil.re/posts/browser-click-to-local-av-exclusion.html</link>
+      <guid isPermaLink="true">https://msil.re/posts/browser-click-to-local-av-exclusion.html</guid>
+      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+      <category>clickjacking</category>
+      <category>browser-extension</category>
+      <category>bug-bounty</category>
+      <category>malwarebytes</category>
+      <description>A clickjacking flaw in Malwarebytes Browser Guard let any website frame the extension&#x27;s UI and trick a user into excluding attacker-chosen domains, an exclusion that reached the local antivirus and could not be undone from the extension.</description>
+      <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+<p>Today’s antivirus software does much more than just sit on your computer. To keep you safe from malicious websites, fake emails, and sneaky downloads, many companies use browser extensions.</p>
+<p>These sometimes work together with locally installed antivirus software to protect you while you’re browsing the internet.</p>
+<p>Now imagine performing a completely normal action, like clicking "Accept Cookies" or solving a captcha (things you might do many times a day while visiting websites), on a webpage you just visited and behind the scenes your antivirus adds a web exclusion for a malicious domain.</p>
+<h2 id="background">Background</h2>
+<p>While researching how <a href="https://www.malwarebytes.com/browserguard" target="_blank" rel="noopener noreferrer"><strong>Browser Guard</strong></a> detects malicious websites (<a href="https://msil.re/posts/reversing-malwarebytes-browser-guard.html" target="_blank" rel="noopener noreferrer">check it here</a>), I randomly came across a DEF CON 33 talk by Marek Tóth on <a href="https://marektoth.com/blog/dom-based-extension-clickjacking/" target="_blank" rel="noopener noreferrer"><strong>DOM-based extension clickjacking</strong></a>.</p>
+<p>The talk focuses on password managers and highlights a new type of browser extension clickjacking he calls <strong>DOM-based extension clickjacking</strong>. My finding does not use that new technique. It relies on the older, <strong>iframe-based</strong> approach he mentions as the one that already existed, where the extension's own pages are loaded inside an iframe, rather than manipulating the UI an extension injects into a page. Either way, the talk was what made me wonder whether Browser Guard could be clickjacked at all.</p>
+<h2 id="how-browser-guard-works">How Browser Guard works</h2>
+<p>Browser Guard is a Manifest V3 extension. There are at least two places in its UI where protection can be switched off for a site.</p>
+<h3 id="the-popup">The popup</h3>
+<p>When you click the extension icon, the "Current Website" tab shows switches for Ads/Trackers, Malware, and Scams for the site you are on. If you turn any of these toggles off, Browser Guard stops applying that protection to that site.</p>
+<figure><img src="https://msil.re/assets/images/browserguard-popup.png" alt="" loading="lazy"></figure>
+<h3 id="the-block-page">The block page</h3>
+<p>When Browser Guard flags a site, it redirects the request to a block page. It shows the reason for the block and two buttons that let the user go back or ignore the warning and continue to the website.</p>
+<p>You also have the option of checking the "Do not block this site again". If you tick this checkbox and continue, the domain is added to the exclusion list and is never blocked again.</p>
+<figure><img src="https://msil.re/assets/images/browserguardblockpage.png" alt="" loading="lazy"></figure>
+<h2 id="finding-the-vulnerability">Finding the vulnerability</h2>
+<p>The first question was "can a page load the main Browser Guard UI in an iframe?"</p>
+<p>By doing a quick search for the word "Malware" in the html files of the extension, I found the page that has the three checkboxes (Ads/Tracker, Malware and Scams): <code>\app\app.html</code></p>
+<p>For this to work two things need to be true:</p>
+<ul><li>The <code>app.html</code> page needs to be listed under <code>web_accessible_resources</code></li><li>The CSP must not block iframes from loading extension pages.</li></ul>
+<p>If we check <code>manifest.json</code> we can see the page is listed under <code>web_accessible_resources</code>:</p>
+<figure><img src="https://msil.re/assets/images/bg-war-old.png" alt="" loading="lazy"></figure>
+<p>Additionally, there is a defined CSP but it does not secure against iframes including the page:</p>
+<figure><img src="https://msil.re/assets/images/bg-csp-old.png" alt="" loading="lazy"></figure>
+<p>We have the perfect conditions for clickjacking. By creating an html file with an iframe pointing to <code>app.html</code>, we can see it loads without a problem:</p>
+<figure><img src="https://msil.re/assets/images/iframeclickjacking.png" alt="" loading="lazy"></figure>
+<h2 id="building-a-proof-of-concept">Building a proof of concept</h2>
+<p>A plain iframe is enough to prove the vulnerability, but it helps to show the attack the way a victim would actually see it, so I wrapped it in something people click without thinking, a fake captcha.</p>
+<p><strong>Setup:</strong></p>
+<ul><li>A "Verify you are human" captcha as a decoy.</li><li>The real Browser Guard UI loaded on top in an iframe at very low opacity, so it is there and clickable but effectively invisible.</li><li>The invisible iframe lined up so the button I care about sits right under the part of the decoy the victim is about to click.</li></ul>
+<p>To the victim it looks like an ordinary captcha. The Browser Guard UI is sitting right on top of it, invisible but fully clickable, so every click meant for the captcha lands on the extension instead.</p>
+<h3 id="two-attack-variants">Two attack variants</h3>
+<h4 id="one-click">One click</h4>
+<p>Put the popup's Malware toggle under the decoy. One clickjacked click turns it off, and Browser Guard stops applying malware protection on the site the victim is on.</p>
+<p>You might ask what the point is if the victim is already on the site. The point is everything Browser Guard does after the page loads. One example is its ClickFix / clipboard protection.</p>
+<div class="callout callout-info">
+<p><strong>ClickFix</strong> is a prominent social engineering and copy-paste cyberattack technique where malicious websites trick users into manually executing harmful system commands. Attackers use fake error messages, browser crashes, or phony CAPTCHA verifications (such as fake Cloudflare or Google prompts) to convince victims to press keys like <code>Windows + R</code>, paste hidden clipboard code (<code>Ctrl + V</code>), and hit <code>Enter</code>.</p>
+</div>
+<p>If you clickjack the Malware toggle off first, that warning never fires, and the attacker's own page has disabled the protection that would have caught its next step.</p>
+<figure><img src="https://msil.re/assets/images/oneclickclickjacking.png" alt="" loading="lazy"></figure>
+<h4 id="two-clicks">Two clicks</h4>
+<p>This one targets the block page, and it is the more serious of the two. Two clicks, ticking "Do not block this site again" and then "Continue to this website", permanently add a domain to the exclusion list.</p>
+<p>The block page can be accessed at:</p>
+<pre class="language-none"><code class="language-none">chrome-extension://ihcjicgdanjaechkgeegckofjjedodee/app/eventpages/block-mv3.html?referrer=null&amp;url=https%3A%2F%2F&lt;WEBSITE&gt;%2F&amp;host=&lt;WEBSITE&gt;
+</code></pre>
+<p>The block page reads the site it is "blocking" from its own URL parameters, the <code>url</code> and <code>host</code>. Nothing stops an attacker from framing the block page pointed at any domain they want.</p>
+<p>So the victim's two clicks do not whitelist the page they are on, but a domain chosen by the attacker.</p>
+<p>This would involve two steps:</p>
+<ol><li>Position the checkbox "Do not block this site again" on top of the captcha.</li><li>After the victim clicks the first time, move the "Continue to this website" button to the correct spot. You can either move the button to the same place on the captcha (pretend the first click didn't do anything) or just make the captcha have a second verification.</li></ol>
+<figure><img src="https://msil.re/assets/images/twoclickclickjacking.png" alt="" loading="lazy"></figure>
+<p>To move the iframe to the next button, we can use the technique mentioned by Marek:</p>
+<pre class="language-js"><code class="language-js">const container = document.getElementById(&#x27;iframe-container&#x27;);
+const anchor = document.getElementById(&#x27;focus-anchor&#x27;);
+
+function init() {
+	anchor.focus();
+}
+
+function handleIframeClick() {
+	setTimeout(() =&gt; {
+		const newTop = Math.floor(Math.random() * 70) + 10;
+		const newLeft = Math.floor(Math.random() * 70) + 10;
+		container.style.top = newTop + &quot;%&quot;;
+		container.style.left = newLeft + &quot;%&quot;;
+
+		anchor.focus();
+	}, 100);
+}
+window.onclick = () =&gt; anchor.focus();
+</code></pre>
+<p>With this we get a moving iframe, which then is only a matter of correctly positioning for the button press:</p>
+<figure><img src="https://msil.re/assets/images/iframe-mb.gif" alt="" loading="lazy"></figure>
+<h2 id="escalating-to-the-local-antivirus">Escalating to the local antivirus</h2>
+<p>The exclusion does not stop at the browser. Browser Guard talks to the locally installed Malwarebytes product through native messaging, and any exclusion added in the extension is synced down to it. So whether the attacker disabled protection for the current site (one click) or added a domain the victim never visited (two clicks), if the desktop antivirus is installed, that exclusion is pushed into it as well.</p>
+<p>It gets worse, because the sync only goes one way. The extension can add an exclusion to the installed antivirus, but it cannot remove one. So if the victim later senses something is wrong and unchecks the toggle, or deletes the domain from the extension's settings page, that only cleans up the browser side. The exclusion stays in the desktop antivirus. To actually get rid of it, the victim has to open the antivirus itself and remove it by hand, assuming they ever find out it is there.</p>
+<figure><img src="https://msil.re/assets/images/mb-exclusions-cj.png" alt="" loading="lazy"></figure>
+<h2 id="remediation">Remediation</h2>
+<p>Malwarebytes fixed it in two ways.</p>
+<p>First, they added a <code>frame-ancestors</code> rule to the Content-Security-Policy:</p>
+<pre class="language-none"><code class="language-none">&quot;content_security_policy&quot;: {
+    &quot;extension_pages&quot;: &quot;default-src &#x27;self&#x27;; base-uri &#x27;self&#x27;; object-src &#x27;none&#x27;; script-src &#x27;self&#x27;; frame-ancestors &#x27;self&#x27; https://my.malwarebytes.com; frame-src &#x27;none&#x27;; worker-src &#x27;self&#x27;; img-src &#x27;self&#x27; data:; style-src &#x27;self&#x27; &#x27;unsafe-inline&#x27;; font-src &#x27;self&#x27;; connect-src &#x27;self&#x27; *;&quot;
+}
+</code></pre>
+<p>With <code>frame-ancestors &#x27;self&#x27; https://my.malwarebytes.com</code>, only the extension's own origin and Malwarebytes own domain are allowed to frame these pages. A random website can no longer load them in an iframe, which is what both variants relied on.</p>
+<p>Second, they removed <code>app/app.html</code>, the popup with the toggles, from <code>web_accessible_resources</code>. It did not need to be reachable from web content, so now it cannot be loaded from a page at all. The block page stays web-accessible because it is still used as the redirect target for a blocked site, but the <code>frame-ancestors</code> rule now protects it.</p>
+<h2 id="disclosure-timeline">Disclosure timeline</h2>
+<ul><li>[2025-08-21]: Reported to Malwarebytes</li><li>[2025-09-10]: Triaged and acknowledged</li><li>[2026-02-05]: Fixed by Malwarebytes. I scored it 7.4 (High); it was rated 5.1 (Medium) and paid $400.</li></ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>None of this was hard to find. Clickjacking is an old, well-known vulnerability that you do not really see much anymore. What made it interesting to me was how far a simple clickjacking could reach, from a click in the browser down to the antivirus layer underneath.</p>]]></content:encoded>
+    </item>
     <item>
       <title>Abusing CAPE Sandbox from the Inside</title>
       <link>https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html</link>
@@ -165,8 +266,8 @@ public class CapeRequest
 }
 </code></pre>
 <p>Originally this was enough, the fake requests showed up in the sandbox report / VirusTotal <strong>Network Communication</strong> tab straight from that POST.</p>
-<h3 id="update-the-post-no-longer-lands-drop-the-file-instead">Update: the POST no longer lands, drop the file instead</h3>
-<p>That POST is how this worked originally. A later CAPE change seems to have broke it. The data still reaches the agent (the endpoint keeps returning <code>{&quot;message&quot;: &quot;OK&quot;, ...}</code>), but it never makes it into the report anymore. The problem is a mismatch between where the agent writes the file and where the collector looks for it.</p>
+<h3 id="update-the-post-no-longer-works">Update: the POST no longer works</h3>
+<p>That POST is how it worked originally. A later CAPE change seems to have broke it. The data still reaches the agent (the endpoint keeps returning <code>{&quot;message&quot;: &quot;OK&quot;, ...}</code>), but it never makes it into the report anymore. The problem appears to be a mismatch between where the agent writes the file and where the collector looks for it.</p>
 <p>The agent writes the posted <code>networkData</code> into a fresh temp subdirectory:</p>
 <pre class="language-python"><code class="language-python">ext_tmpdir = tempfile.mkdtemp(prefix=&quot;&quot;) # for example %TEMP%\sdbdz33h (no &quot;tmp&quot; prefix)
 ext_filepath = &quot;bext_&quot; + &quot;&quot;.join(random.choice(string.ascii_letters) for _ in range(11)) + &quot;.json&quot;
@@ -1744,8 +1845,7 @@ function startVerification() {
 <p>Browser Guard is a genuinely interesting piece of software. There's a lot going on under the hood, more layers than I expected going in.</p>
 <p>Most of its work happens locally. The bloom filters, heuristic rules, malware URL database, download classifier, and the rest all decide things on their own. Hubble only gets called after something has already been flagged, and only to undo the block.</p>
 <p>That design is reasonable, but it puts a lot of trust in the local code. The Hubble credentials are XOR-obfuscated in the bundle, but the source maps ship alongside it with the code in plain readable form. The desktop AV uses the same Hubble service, and although I haven't tested it, the same credentials may well work there too.</p>
-<p>The bigger issue is Section 13. The production extension ships a debug interface keyed to a malwarebytes.com URL that any page can navigate to. One of the actions turns off heuristic blocking globally.</p>
-<p>I haven't reported this to Malwarebytes. Past experience with their bug bounty hasn't been great, and the debug interface has been sitting in the production build long enough that someone there presumably knows about it.</p>]]></content:encoded>
+<p>The bigger issue is Section 13. The production extension ships a debug interface keyed to a malwarebytes.com URL that any page can navigate to. One of the actions turns off heuristic blocking globally.</p>]]></content:encoded>
     </item>
     <item>
       <title>Fake ILSpy Site Delivers Search-Hijacking Malware</title>

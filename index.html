@@ -68,18 +68,18 @@
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
     <input id="search" type="search" placeholder="Search posts&hellip;" autocomplete="off" spellcheck="false" aria-label="Search posts">
   </div>
-  <div class="filters" id="filters"><button class="chip" type="button" aria-pressed="true" data-tag="all">all</button><button class="chip" type="button" aria-pressed="false" data-tag="malwarebytes">malwarebytes</button><button class="chip" type="button" aria-pressed="false" data-tag="reverse-engineering">reverse-engineering</button><button class="chip" type="button" aria-pressed="false" data-tag="privesc">privesc</button><button class="chip" type="button" aria-pressed="false" data-tag="browser-extension">browser-extension</button><button class="chip" type="button" aria-pressed="false" data-tag="bypass">bypass</button></div>
+  <div class="filters" id="filters"><button class="chip" type="button" aria-pressed="true" data-tag="all">all</button><button class="chip" type="button" aria-pressed="false" data-tag="malwarebytes">malwarebytes</button><button class="chip" type="button" aria-pressed="false" data-tag="reverse-engineering">reverse-engineering</button><button class="chip" type="button" aria-pressed="false" data-tag="browser-extension">browser-extension</button><button class="chip" type="button" aria-pressed="false" data-tag="privesc">privesc</button><button class="chip" type="button" aria-pressed="false" data-tag="bug-bounty">bug-bounty</button></div>
 </div>
 
 <div id="featured-wrap">
 <h2 class="section-title">Featured</h2>
-<a class="featured" href="posts/reversing-malwarebytes-browser-guard.html">
-  <div class="featured-thumb"><img src="assets/images/browserguard.png" alt="" loading="lazy"></div>
+<a class="featured" href="posts/browser-click-to-local-av-exclusion.html">
+  <div class="featured-thumb"><img src="assets/images/clickjacking.png" alt="" loading="lazy"></div>
   <div class="featured-body">
     <span class="featured-flag">Featured</span>
-    <h3>Reverse engineering Malwarebytes Browser Guard</h3>
-    <p>Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.</p>
-    <div class="featured-meta">May 20, 2026 &middot; 36 min read</div>
+    <h3>From a Browser Click to a Local AV Exclusion</h3>
+    <p>A clickjacking flaw in Malwarebytes Browser Guard let any website frame the extension&#x27;s UI and trick a user into excluding attacker-chosen domains, an exclusion that reached the local antivirus and could not be undone from the extension.</p>
+    <div class="featured-meta">Aug 11, 2026 &middot; 7 min read</div>
   </div>
 </a>
 </div>
@@ -87,6 +87,18 @@
 <h2 class="section-title">Latest posts <span class="count" id="post-count"></span></h2>
 <p id="search-empty" class="search-empty" hidden>No posts match that filter.</p>
 <section id="posts" class="posts">
+
+  <article class="post-card" data-url="posts/reversing-malwarebytes-browser-guard.html" data-tags="reverse-engineering browser-extension malwarebytes javascript">
+    <a href="posts/reversing-malwarebytes-browser-guard.html" class="post-card-link">
+      <div class="post-card-thumb"><img src="assets/images/browserguard.png" alt="" loading="lazy"><span class="read-badge">36 min</span></div>
+      <div class="post-card-content">
+        <div class="tag-row"><span class="series-badge">malwarebytes</span> <span class="tag">reverse-engineering</span> <span class="tag">browser-extension</span> <span class="tag">malwarebytes</span> <span class="tag">javascript</span></div>
+        <h3 class="post-card-title">Reverse engineering Malwarebytes Browser Guard</h3>
+        <p class="post-card-summary">Static analysis of Browser Guard 3.1.5 (15M+ installs): Zstd-encoded on-disk databases, the heuristic rule engine that scans the live DOM, the Hubble false-positive service, the package update protocol, and a debug URL interface left in production. With reimplementations in C# and Python.</p>
+        <div class="post-card-meta">May 20, 2026</div>
+      </div>
+    </a>
+  </article>
 
   <article class="post-card" data-url="posts/fake-ilspy-site-search-hijacker.html" data-tags="malware-analysis https-mitm iocs">
     <a href="posts/fake-ilspy-site-search-hijacker.html" class="post-card-link">
