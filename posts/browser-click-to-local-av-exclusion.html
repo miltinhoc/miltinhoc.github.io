@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0d11">
 <script>
-(function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);})();
+(function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);if(t==='light')document.querySelector('meta[name="theme-color"]').setAttribute('content','#f7f7f9');})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W86JPFRPVX"></script>
 <script>
@@ -13,7 +14,6 @@
   gtag('js', new Date());
   gtag('config', 'G-W86JPFRPVX');
 </script>
-<script defer data-website-id="dfid_jN99CpeCcVAmwA2rVQUoE" data-domain="msil.re" src="https://datafa.st/js/script.js"></script>
 <title>From a Browser Click to a Local AV Exclusion | msil.re</title>
 <meta name="description" content="A clickjacking flaw in Malwarebytes Browser Guard let any website frame the extension's UI and trick a user into excluding attacker-chosen domains, an exclusion that reached the local antivirus and could not be undone from the extension.">
 <meta name="author" content="miltinh0c">
@@ -30,15 +30,15 @@
 <meta name="twitter:description" content="A clickjacking flaw in Malwarebytes Browser Guard let any website frame the extension's UI and trick a user into excluding attacker-chosen domains, an exclusion that reached the local antivirus and could not be undone from the extension.">
 <meta name="twitter:image" content="https://msil.re/assets/images/thumbs/browser-click-to-local-av-exclusion.png">
 <meta name="twitter:image:alt" content="From a Browser Click to a Local AV Exclusion">
-<meta name="theme-color" content="#0d0d11">
 <meta name="robots" content="index, follow, noai, noimageai">
 <meta name="googlebot" content="index, follow, noai, noimageai">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
 <link rel="alternate" type="application/rss+xml" title="miltinh0c - Security Write-ups" href="../feed.xml">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-<link rel="stylesheet" href="../assets/css/style.css">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "From a Browser Click to a Local AV Exclusion", "description": "A clickjacking flaw in Malwarebytes Browser Guard let any website frame the extension's UI and trick a user into excluding attacker-chosen domains, an exclusion that reached the local antivirus and could not be undone from the extension.", "image": "https://msil.re/assets/images/thumbs/browser-click-to-local-av-exclusion.png", "datePublished": "2026-08-11", "dateModified": "2026-08-11", "timeRequired": "PT6M", "author": {"@type": "Person", "name": "miltinh0c", "url": "https://github.com/miltinhoc"}, "publisher": {"@type": "Person", "name": "miltinh0c", "logo": {"@type": "ImageObject", "url": "https://msil.re/assets/favicon.svg"}}, "mainEntityOfPage": "https://msil.re/posts/browser-click-to-local-av-exclusion.html", "keywords": "clickjacking, browser-extension, bug-bounty, malwarebytes", "url": "https://msil.re/posts/browser-click-to-local-av-exclusion.html"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&family=JetBrains+Mono:wght@400..700&display=swap">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "From a Browser Click to a Local AV Exclusion", "description": "A clickjacking flaw in Malwarebytes Browser Guard let any website frame the extension's UI and trick a user into excluding attacker-chosen domains, an exclusion that reached the local antivirus and could not be undone from the extension.", "image": "https://msil.re/assets/images/thumbs/browser-click-to-local-av-exclusion.png", "datePublished": "2026-08-11", "dateModified": "2026-08-11", "timeRequired": "PT6M", "author": {"@type": "Person", "name": "miltinh0c", "url": "https://github.com/miltinhoc"}, "publisher": {"@type": "Person", "name": "miltinh0c", "logo": {"@type": "ImageObject", "url": "https://msil.re/assets/brand.png"}}, "mainEntityOfPage": "https://msil.re/posts/browser-click-to-local-av-exclusion.html", "keywords": "clickjacking, browser-extension, bug-bounty, malwarebytes", "url": "https://msil.re/posts/browser-click-to-local-av-exclusion.html"}</script>
 <meta property="article:published_time" content="2026-08-11">
 <meta property="article:modified_time" content="2026-08-11">
 <meta property="article:author" content="miltinh0c">
@@ -48,8 +48,11 @@
 <meta property="article:tag" content="malwarebytes">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="post-page">
+<a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="../index.html" aria-label="msil.re">
@@ -67,7 +70,7 @@
     </nav>
   </div>
 </header>
-<main class="wrap article-layout">
+<main id="main" class="wrap article-layout">
 
 <article>
   <header class="article-header">
@@ -75,11 +78,16 @@
       <time datetime="2026-08-11">Aug 11, 2026</time>
       <span class="dot">&middot;</span>
       <span class="read-time">6 min read</span>
+      
     </div>
     <h1 class="article-title">From a Browser Click to a Local AV Exclusion</h1>
     <p class="article-summary">A clickjacking flaw in Malwarebytes Browser Guard let any website frame the extension&#x27;s UI and trick a user into excluding attacker-chosen domains, an exclusion that reached the local antivirus and could not be undone from the extension.</p>
     <div class="tag-row"><a class="tag" href="../tags.html#t-clickjacking">clickjacking</a> <a class="tag" href="../tags.html#t-browser-extension">browser-extension</a> <a class="tag" href="../tags.html#t-bug-bounty">bug-bounty</a> <a class="tag" href="../tags.html#t-malwarebytes">malwarebytes</a></div>
   </header>
+  <details class="toc-mobile">
+    <summary>On this page</summary>
+    <nav class="toc-nav" aria-label="On this page"><a class="toc-h2" href="#introduction">Introduction</a><a class="toc-h2" href="#background">Background</a><a class="toc-h2" href="#how-browser-guard-works">How Browser Guard works</a><a class="toc-h3" href="#the-popup">The popup</a><a class="toc-h3" href="#the-block-page">The block page</a><a class="toc-h2" href="#finding-the-vulnerability">Finding the vulnerability</a><a class="toc-h2" href="#building-a-proof-of-concept">Building a proof of concept</a><a class="toc-h3" href="#two-attack-variants">Two attack variants</a><a class="toc-h2" href="#escalating-to-the-local-antivirus">Escalating to the local antivirus</a><a class="toc-h2" href="#remediation">Remediation</a><a class="toc-h2" href="#disclosure-timeline">Disclosure timeline</a></nav>
+  </details>
   <div class="post-body">
 <h2 id="introduction">Introduction</h2>
 <p>Today's antivirus software does much more than just sit on your computer. To keep you safe from malicious websites, fake emails, and sneaky downloads, many companies use browser extensions.</p>
@@ -92,22 +100,22 @@
 <p>Browser Guard is a Manifest V3 extension. There are at least two places in its UI where protection can be switched off for a site.</p>
 <h3 id="the-popup">The popup</h3>
 <p>When you click the extension icon, the "Current Website" tab shows switches for Ads/Trackers, Malware, and Scams for the site you are on. If you turn any of these toggles off, Browser Guard stops applying that protection to that site.</p>
-<figure><img src="../assets/images/browserguard-popup.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/browserguard-popup.png" alt="" width="599" height="600" loading="lazy"></figure>
 <h3 id="the-block-page">The block page</h3>
 <p>When Browser Guard flags a site, it redirects the request to a block page. It shows the reason for the block and two buttons that let the user go back or ignore the warning and continue to the website.</p>
 <p>You also have the option of checking the "Do not block this site again". If you tick this checkbox and continue, the domain is added to the exclusion list and is never blocked again.</p>
-<figure><img src="../assets/images/browserguardblockpage.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/browserguardblockpage.png" alt="" width="820" height="492" loading="lazy"></figure>
 <h2 id="finding-the-vulnerability">Finding the vulnerability</h2>
 <p>The first question was "can a page load the main Browser Guard UI in an iframe?"</p>
 <p>By doing a quick search for the word "Malware" in the html files of the extension, I found the page that has the three checkboxes (Ads/Tracker, Malware and Scams): <code>\app\app.html</code></p>
 <p>For this to work two things need to be true:</p>
 <ul><li>The <code>app.html</code> page needs to be listed under <code>web_accessible_resources</code></li><li>The CSP must not block iframes from loading extension pages.</li></ul>
 <p>If we check <code>manifest.json</code> we can see the page is listed under <code>web_accessible_resources</code>:</p>
-<figure><img src="../assets/images/bg-war-old.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/bg-war-old.png" alt="" width="521" height="279" loading="lazy"></figure>
 <p>Additionally, there is a defined CSP but it does not secure against iframes including the page:</p>
-<figure><img src="../assets/images/bg-csp-old.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/bg-csp-old.png" alt="" width="1102" height="54" loading="lazy"></figure>
 <p>Those two conditions are enough for classic iframe clickjacking. A simple iframe loading <code>app.html</code> worked immediately:</p>
-<figure><img src="../assets/images/iframeclickjacking.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/iframeclickjacking.png" alt="" width="493" height="712" loading="lazy"></figure>
 <h2 id="building-a-proof-of-concept">Building a proof of concept</h2>
 <p>A plain iframe is enough to prove the vulnerability, but it helps to show the attack the way a victim would actually see it, so I wrapped it in something people click without thinking, a fake captcha.</p>
 <p><strong>Setup:</strong></p>
@@ -120,7 +128,7 @@
 <p><strong>ClickFix</strong> is a prominent social engineering and copy-paste cyberattack technique where malicious websites trick users into manually executing harmful system commands. Attackers use fake error messages, browser crashes, or phony CAPTCHA verifications (such as fake Cloudflare or Google prompts) to convince victims to press keys like <code>Windows + R</code>, paste hidden clipboard code (<code>Ctrl + V</code>), and hit <code>Enter</code>.</p>
 </div>
 <p>If you clickjack the Malware toggle off first, that warning never fires, and the attacker's own page has disabled the protection that would have caught its next step.</p>
-<figure><img src="../assets/images/oneclickclickjacking.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/oneclickclickjacking.png" alt="" width="826" height="363" loading="lazy"></figure>
 <h4 id="two-clicks">Two clicks</h4>
 <p>This one targets the block page, and it is the more serious of the two. Two clicks, ticking "Do not block this site again" and then "Continue to this website", permanently add a domain to the exclusion list.</p>
 <p>The block page takes the domain it's "blocking" from its own URL parameters, <code>url</code> and <code>host</code>. Nothing stops an attacker from pointing it at any domain they choose:</p>
@@ -128,7 +136,7 @@
 </code></pre>
 <p>This would involve two steps:</p>
 <ol><li>Position the checkbox "Do not block this site again" on top of the captcha.</li><li>After the victim clicks the first time, move the "Continue to this website" button to the correct spot. You can either move the button to the same place on the captcha (pretend the first click didn't do anything) or just make the captcha have a second verification.</li></ol>
-<figure><img src="../assets/images/twoclickclickjacking.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/twoclickclickjacking.png" alt="" width="797" height="367" loading="lazy"></figure>
 <p>To move the iframe to the next button, we can use the technique mentioned by Marek:</p>
 <pre class="language-js"><code class="language-js">const container = document.getElementById(&#x27;iframe-container&#x27;);
 const anchor = document.getElementById(&#x27;focus-anchor&#x27;);
@@ -150,11 +158,11 @@ function handleIframeClick() {
 window.onclick = () =&gt; anchor.focus();
 </code></pre>
 <p>With this we get a moving iframe, which then is just a matter of positioning for the button press:</p>
-<figure><img src="../assets/images/iframe-mb.gif" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/iframe-mb.gif" alt="" width="542" height="306" loading="lazy"></figure>
 <h2 id="escalating-to-the-local-antivirus">Escalating to the local antivirus</h2>
 <p>Browser Guard talks to the locally installed Malwarebytes product through native messaging, and any exclusion added in the extension is synced down to it. So whether the attacker disabled protection for the current site (one click) or added a domain the victim never visited (two clicks), if the desktop antivirus is installed, that exclusion is pushed into it as well.</p>
 <p>Because the sync only goes one way, the extension can add an exclusion to the installed antivirus, but it cannot remove one. So if the victim later senses something is wrong and unchecks the toggle, or deletes the domain from the extension's settings page, that only cleans up the browser side. The exclusion stays in the desktop antivirus.</p>
-<figure><img src="../assets/images/mb-exclusions-cj.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/mb-exclusions-cj.png" alt="" width="1024" height="720" loading="lazy"></figure>
 <h2 id="remediation">Remediation</h2>
 <p>Malwarebytes fixed it in two ways.</p>
 <p>First, they added a <code>frame-ancestors</code> rule to the Content-Security-Policy:</p>
@@ -206,56 +214,11 @@ window.onclick = () =&gt; anchor.focus();
     </nav>
   </div>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
-<script>
-(function () {
-  var btn = document.querySelector('.theme-toggle');
-  if (!btn) return;
-  var meta = document.querySelector('meta[name="theme-color"]');
-  btn.addEventListener('click', function () {
-    var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    var next = cur === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('theme', next); } catch (e) {}
-    if (meta) meta.setAttribute('content', next === 'light' ? '#f7f7f9' : '#0d0d11');
-    var giscus = document.querySelector('iframe.giscus-frame');
-    if (giscus) giscus.contentWindow.postMessage({ giscus: { setConfig: { theme: next } } }, 'https://giscus.app');
-  });
-})();
-(function () {
-  var links = document.querySelectorAll('.toc a');
-  if (!links.length) return;
-  var map = new Map();
-  links.forEach(function (a) {
-    var id = a.getAttribute('href').slice(1);
-    var el = document.getElementById(id);
-    if (el) map.set(el, a);
-  });
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      var link = map.get(entry.target);
-      if (!link) return;
-      if (entry.isIntersecting) {
-        links.forEach(function (l) { l.classList.remove('active'); });
-        link.classList.add('active');
-        var toc = document.querySelector('.toc');
-        if (toc && toc.scrollHeight > toc.clientHeight) {
-          var top = link.offsetTop;
-          if (top < toc.scrollTop + 40) {
-            toc.scrollTop = top - 40;
-          } else if (top + link.offsetHeight > toc.scrollTop + toc.clientHeight - 40) {
-            toc.scrollTop = top + link.offsetHeight - toc.clientHeight + 40;
-          }
-        }
-      }
-    });
-  }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
-  map.forEach(function (_, el) { io.observe(el); });
-})();
-</script>
+<script src="../assets/js/site.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" defer></script>
 </body>
 </html>

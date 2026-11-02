@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0d11">
 <script>
-(function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);})();
+(function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);if(t==='light')document.querySelector('meta[name="theme-color"]').setAttribute('content','#f7f7f9');})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W86JPFRPVX"></script>
 <script>
@@ -13,7 +14,6 @@
   gtag('js', new Date());
   gtag('config', 'G-W86JPFRPVX');
 </script>
-<script defer data-website-id="dfid_jN99CpeCcVAmwA2rVQUoE" data-domain="msil.re" src="https://datafa.st/js/script.js"></script>
 <title>404 | msil.re</title>
 <meta name="description" content="page not found">
 <meta name="author" content="miltinh0c">
@@ -30,16 +30,18 @@
 <meta name="twitter:description" content="page not found">
 <meta name="twitter:image" content="https://msil.re/assets/og.png">
 <meta name="twitter:image:alt" content="msil.re">
-<meta name="theme-color" content="#0d0d11">
 <meta name="robots" content="index, follow, noai, noimageai">
 <meta name="googlebot" content="index, follow, noai, noimageai">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="alternate" type="application/rss+xml" title="miltinh0c - Security Write-ups" href="feed.xml">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&family=JetBrains+Mono:wght@400..700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="error-page">
+<a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="index.html" aria-label="msil.re">
@@ -57,7 +59,7 @@
     </nav>
   </div>
 </header>
-<main class="wrap ">
+<main id="main" class="wrap ">
 
 <section class="hero hero-error">
   <h1 class="error-code">404</h1>
@@ -83,56 +85,6 @@
     </nav>
   </div>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
-<script>
-(function () {
-  var btn = document.querySelector('.theme-toggle');
-  if (!btn) return;
-  var meta = document.querySelector('meta[name="theme-color"]');
-  btn.addEventListener('click', function () {
-    var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    var next = cur === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('theme', next); } catch (e) {}
-    if (meta) meta.setAttribute('content', next === 'light' ? '#f7f7f9' : '#0d0d11');
-    var giscus = document.querySelector('iframe.giscus-frame');
-    if (giscus) giscus.contentWindow.postMessage({ giscus: { setConfig: { theme: next } } }, 'https://giscus.app');
-  });
-})();
-(function () {
-  var links = document.querySelectorAll('.toc a');
-  if (!links.length) return;
-  var map = new Map();
-  links.forEach(function (a) {
-    var id = a.getAttribute('href').slice(1);
-    var el = document.getElementById(id);
-    if (el) map.set(el, a);
-  });
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      var link = map.get(entry.target);
-      if (!link) return;
-      if (entry.isIntersecting) {
-        links.forEach(function (l) { l.classList.remove('active'); });
-        link.classList.add('active');
-        var toc = document.querySelector('.toc');
-        if (toc && toc.scrollHeight > toc.clientHeight) {
-          var top = link.offsetTop;
-          if (top < toc.scrollTop + 40) {
-            toc.scrollTop = top - 40;
-          } else if (top + link.offsetHeight > toc.scrollTop + toc.clientHeight - 40) {
-            toc.scrollTop = top + link.offsetHeight - toc.clientHeight + 40;
-          }
-        }
-      }
-    });
-  }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
-  map.forEach(function (_, el) { io.observe(el); });
-})();
-</script>
+<script src="assets/js/site.js" defer></script>
 </body>
 </html>

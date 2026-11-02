@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d0d11">
 <script>
-(function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);})();
+(function(){var t;try{t=localStorage.getItem('theme');}catch(e){}if(!t)t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';document.documentElement.setAttribute('data-theme',t);if(t==='light')document.querySelector('meta[name="theme-color"]').setAttribute('content','#f7f7f9');})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W86JPFRPVX"></script>
 <script>
@@ -13,7 +14,6 @@
   gtag('js', new Date());
   gtag('config', 'G-W86JPFRPVX');
 </script>
-<script defer data-website-id="dfid_jN99CpeCcVAmwA2rVQUoE" data-domain="msil.re" src="https://datafa.st/js/script.js"></script>
 <title>Abusing CAPE Sandbox from the Inside | msil.re</title>
 <meta name="description" content="CAPE's agent exposes unauthenticated localhost routes to the sample under analysis, enough to fingerprint the sandbox, plant bogus network IOCs on VirusTotal, and shut the whole analysis down with a single request.">
 <meta name="author" content="miltinh0c">
@@ -30,15 +30,15 @@
 <meta name="twitter:description" content="CAPE's agent exposes unauthenticated localhost routes to the sample under analysis, enough to fingerprint the sandbox, plant bogus network IOCs on VirusTotal, and shut the whole analysis down with a single request.">
 <meta name="twitter:image" content="https://msil.re/assets/images/thumbs/abusing-cape-sandbox-from-the-inside.png">
 <meta name="twitter:image:alt" content="Abusing CAPE Sandbox from the Inside">
-<meta name="theme-color" content="#0d0d11">
 <meta name="robots" content="index, follow, noai, noimageai">
 <meta name="googlebot" content="index, follow, noai, noimageai">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
 <link rel="alternate" type="application/rss+xml" title="miltinh0c - Security Write-ups" href="../feed.xml">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-<link rel="stylesheet" href="../assets/css/style.css">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Abusing CAPE Sandbox from the Inside", "description": "CAPE's agent exposes unauthenticated localhost routes to the sample under analysis, enough to fingerprint the sandbox, plant bogus network IOCs on VirusTotal, and shut the whole analysis down with a single request.", "image": "https://msil.re/assets/images/thumbs/abusing-cape-sandbox-from-the-inside.png", "datePublished": "2026-07-04", "dateModified": "2026-07-04", "timeRequired": "PT8M", "author": {"@type": "Person", "name": "miltinh0c", "url": "https://github.com/miltinhoc"}, "publisher": {"@type": "Person", "name": "miltinh0c", "logo": {"@type": "ImageObject", "url": "https://msil.re/assets/favicon.svg"}}, "mainEntityOfPage": "https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html", "keywords": "malware-analysis, sandbox-evasion, cape", "url": "https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&family=JetBrains+Mono:wght@400..700&display=swap">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Abusing CAPE Sandbox from the Inside", "description": "CAPE's agent exposes unauthenticated localhost routes to the sample under analysis, enough to fingerprint the sandbox, plant bogus network IOCs on VirusTotal, and shut the whole analysis down with a single request.", "image": "https://msil.re/assets/images/thumbs/abusing-cape-sandbox-from-the-inside.png", "datePublished": "2026-07-04", "dateModified": "2026-07-04", "timeRequired": "PT8M", "author": {"@type": "Person", "name": "miltinh0c", "url": "https://github.com/miltinhoc"}, "publisher": {"@type": "Person", "name": "miltinh0c", "logo": {"@type": "ImageObject", "url": "https://msil.re/assets/brand.png"}}, "mainEntityOfPage": "https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html", "keywords": "malware-analysis, sandbox-evasion, cape", "url": "https://msil.re/notes/abusing-cape-sandbox-from-the-inside.html"}</script>
 <meta property="article:published_time" content="2026-07-04">
 <meta property="article:modified_time" content="2026-07-04">
 <meta property="article:author" content="miltinh0c">
@@ -47,8 +47,11 @@
 <meta property="article:tag" content="cape">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body class="post-page">
+<a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="../index.html" aria-label="msil.re">
@@ -66,7 +69,7 @@
     </nav>
   </div>
 </header>
-<main class="wrap article-layout">
+<main id="main" class="wrap article-layout">
 
 <article>
   <header class="article-header">
@@ -74,11 +77,16 @@
       <time datetime="2026-07-04">Jul 4, 2026</time>
       <span class="dot">&middot;</span>
       <span class="read-time">8 min read</span>
+      
     </div>
     <h1 class="article-title">Abusing CAPE Sandbox from the Inside</h1>
     <p class="article-summary">CAPE&#x27;s agent exposes unauthenticated localhost routes to the sample under analysis, enough to fingerprint the sandbox, plant bogus network IOCs on VirusTotal, and shut the whole analysis down with a single request.</p>
     <div class="tag-row"><a class="tag" href="../tags.html#t-malware-analysis">malware-analysis</a> <a class="tag" href="../tags.html#t-sandbox-evasion">sandbox-evasion</a> <a class="tag" href="../tags.html#t-cape">cape</a></div>
   </header>
+  <details class="toc-mobile">
+    <summary>On this page</summary>
+    <nav class="toc-nav" aria-label="On this page"><a class="toc-h2" href="#what-is-cape-sandbox">What is CAPE Sandbox</a><a class="toc-h2" href="#how-the-browser-extension-works">How the Browser Extension Works</a><a class="toc-h2" href="#the-http-logging-endpoint">The HTTP Logging Endpoint</a><a class="toc-h2" href="#detecting-cape">Detecting CAPE</a><a class="toc-h2" href="#the-json-payload-format">The JSON Payload Format</a><a class="toc-h2" href="#spoofing-network-traffic">Spoofing Network Traffic</a><a class="toc-h3" href="#update-the-post-no-longer-works">Update: the POST no longer works</a><a class="toc-h3" href="#c-example">C# example</a><a class="toc-h2" href="#the-other-reachable-route-status">The Other Reachable Route: /status</a><a class="toc-h2" href="#consequences">Consequences</a><a class="toc-h2" href="#conclusion">Conclusion</a></nav>
+  </details>
   <div class="post-body">
 <h2 id="what-is-cape-sandbox">What is CAPE Sandbox</h2>
 <p><a href="https://capesandbox.com/" target="_blank" rel="noopener noreferrer">CAPE</a> (Malware Configuration And Payload Extraction) is an open-source automated malware analysis sandbox, widely used by researchers and integrated into services like VirusTotal to generate behavioral reports.</p>
@@ -344,7 +352,7 @@ static async Task Main(string[] args)
     File.WriteAllText(path, json);
 </code></pre>
 <p>We delete any other <code>bext_</code> files that might exist and drop ours, <code>browsermonitor</code> takes the first match it sees and uploads it when the analysis ends. With that, the same crafted <code>networkData</code> surfaces on VirusTotal again.</p>
-<figure><img src="../assets/images/Pasted%20image%2020260704205714.png" alt="" loading="lazy"></figure>
+<figure><img src="../assets/images/Pasted%20image%2020260704205714.png" alt="" width="352" height="190" loading="lazy"></figure>
 <h2 id="the-other-reachable-route-status">The Other Reachable Route: <code>/status</code></h2>
 <p><code>/browser_extension</code> isn't the only route left open to the guest, <code>POST /status</code> is whitelisted too, and it's way more insteresting. It's the route the CAPE host polls (<code>GET /status</code>) to track the analysis, and its <code>POST</code> handler lets the caller overwrite the reported status:</p>
 <pre class="language-python"><code class="language-python">@app.route(&quot;/status&quot;, methods=[&quot;POST&quot;])
@@ -446,56 +454,11 @@ await SetCapeStatus(CapeStatus.Complete, &quot;True&quot;);
     </nav>
   </div>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
-<script>
-(function () {
-  var btn = document.querySelector('.theme-toggle');
-  if (!btn) return;
-  var meta = document.querySelector('meta[name="theme-color"]');
-  btn.addEventListener('click', function () {
-    var cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    var next = cur === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('theme', next); } catch (e) {}
-    if (meta) meta.setAttribute('content', next === 'light' ? '#f7f7f9' : '#0d0d11');
-    var giscus = document.querySelector('iframe.giscus-frame');
-    if (giscus) giscus.contentWindow.postMessage({ giscus: { setConfig: { theme: next } } }, 'https://giscus.app');
-  });
-})();
-(function () {
-  var links = document.querySelectorAll('.toc a');
-  if (!links.length) return;
-  var map = new Map();
-  links.forEach(function (a) {
-    var id = a.getAttribute('href').slice(1);
-    var el = document.getElementById(id);
-    if (el) map.set(el, a);
-  });
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      var link = map.get(entry.target);
-      if (!link) return;
-      if (entry.isIntersecting) {
-        links.forEach(function (l) { l.classList.remove('active'); });
-        link.classList.add('active');
-        var toc = document.querySelector('.toc');
-        if (toc && toc.scrollHeight > toc.clientHeight) {
-          var top = link.offsetTop;
-          if (top < toc.scrollTop + 40) {
-            toc.scrollTop = top - 40;
-          } else if (top + link.offsetHeight > toc.scrollTop + toc.clientHeight - 40) {
-            toc.scrollTop = top + link.offsetHeight - toc.clientHeight + 40;
-          }
-        }
-      }
-    });
-  }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
-  map.forEach(function (_, el) { io.observe(el); });
-})();
-</script>
+<script src="../assets/js/site.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/show-language/prism-show-language.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" defer></script>
 </body>
 </html>
